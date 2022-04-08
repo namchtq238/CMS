@@ -20,24 +20,23 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     UserRepository userRepo;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
     public void registerUser(UserReq req) {
-        if(userRepo.existsByUserName(req.getUsername())) throw new Exception("Username already exist");
-
         User user = new User();
 
         user.setUserName(req.getUsername());
-        user.setPassword(req.getPassword());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setRole(ERole.STAFF.getValue());
 
         userRepo.save(user);
     }
 
     @Override
-    @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
     public UserInfoRes updateUserInfo(Long id, UserInfoReq req) {
         Optional<User> userOpt = userRepo.findById(id);
