@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors() // Ngăn chặn request từ một domain khác
                 .and()
+                .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(authEntryPointJwt)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
