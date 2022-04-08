@@ -7,5 +7,4 @@ public class UserInfoReq {
     String name;
     String address;
     String email;
-    String password;
 }
