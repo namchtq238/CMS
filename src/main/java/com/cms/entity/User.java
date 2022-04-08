@@ -1,36 +1,28 @@
 package com.cms.entity;
 
-import javax.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Table(name = "user")
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
+@Table(name = "users")
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class User {
+
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "address")
-    private String address;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "role")
-    private Integer Role;
-
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Staff staff;
-
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private QA qa;
 }
