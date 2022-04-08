@@ -29,6 +29,7 @@ public class UserServiceImp implements UserService {
     public void registerUser(UserReq req) {
         User user = new User();
 
+        if(userRepo.existsByUserName(req.getUsername())) throw new Exception(String.format("username %s already existed"));
         user.setUserName(req.getUsername());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setRole(ERole.STAFF.getValue());
@@ -37,9 +38,12 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
-    public UserInfoRes updateUserInfo(Long id, UserInfoReq req) {
-        Optional<User> userOpt = userRepo.findById(id);
+    public UserInfoRes updateUserInfo(UserInfoReq req) {
+        Optional<User> userOpt = userRepo.findById(req.getId());
+
+        if(userOpt.isEmpty()) throw new Exception("can't find user");
         User user = userOpt.get();
 
         user.setName(req.getName());
