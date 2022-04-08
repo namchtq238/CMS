@@ -1,5 +1,6 @@
 package com.cms.service;
 
+import com.cms.constants.ERole;
 import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserReq;
 import com.cms.controller.response.UserInfoRes;
@@ -23,22 +24,28 @@ public class UserServiceImp implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
+    @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
     public void registerUser(UserReq req) {
         User user = new User();
+
+        if(userRepo.existsByUserName(req.getUsername())) throw new Exception(String.format("username %s already existed"));
         user.setUserName(req.getUsername());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setRole(ERole.STAFF.getValue());
+
         userRepo.save(user);
     }
 
     @Override
+    @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
-    public UserInfoRes updateUserInfo(Long id, UserInfoReq req) {
-        Optional<User> userOpt = userRepo.findById(id);
-        if(userOpt.isEmpty()) throw new RuntimeException("Can't find user");
+    public UserInfoRes updateUserInfo(UserInfoReq req) {
+        Optional<User> userOpt = userRepo.findById(req.getId());
+
+        if(userOpt.isEmpty()) throw new Exception("can't find user");
         User user = userOpt.get();
 
-        user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setName(req.getName());
         user.setAddress(req.getAddress());
         user.setEmail(req.getEmail());
