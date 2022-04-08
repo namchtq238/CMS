@@ -19,25 +19,26 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     UserRepository userRepo;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public void registerUser(UserReq req) {
         User user = new User();
         user.setUserName(req.getUsername());
-        user.setPassword(req.getPassword());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
         userRepo.save(user);
     }
 
     @Override
-    @SneakyThrows
     @Transactional(rollbackOn = RuntimeException.class)
     public UserInfoRes updateUserInfo(Long id, UserInfoReq req) {
         Optional<User> userOpt = userRepo.findById(id);
         if(userOpt.isEmpty()) throw new RuntimeException("Can't find user");
         User user = userOpt.get();
 
-        user.setPassword(req.getPassword());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setName(req.getName());
         user.setAddress(req.getAddress());
         user.setEmail(req.getEmail());
