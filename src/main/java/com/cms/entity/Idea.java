@@ -30,7 +30,7 @@ public class Idea {
     private Category category;
 
     @OneToMany(mappedBy = "idea", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    private List<Like> like;
+    private List<Likes> like;
 
     @OneToMany(mappedBy = "idea", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<Comment> comments;

@@ -24,7 +24,7 @@ public class Staff {
     private List<Idea> idea;
 
     @OneToMany(mappedBy = "staff", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    private List<Like> like;
+    private List<Likes> like;
 
     @OneToMany(mappedBy = "staff", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<Comment> comments;
