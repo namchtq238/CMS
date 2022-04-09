@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LikeRepo extends JpaRepository<Likes, Long> {
+    Likes findByStaffIdAndIdeaId(Long staffId, Long ideaId);
+    Integer countLikesByIdeaId(Long ideaId);
 }

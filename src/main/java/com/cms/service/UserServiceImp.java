@@ -1,5 +1,6 @@
 package com.cms.service;
 
+import com.cms.config.jwt.UserDetailsImpl;
 import com.cms.config.jwt.JwtUtils;
 import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
@@ -12,6 +13,9 @@ import com.cms.entity.User;
 import lombok.SneakyThrows;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -83,5 +87,12 @@ public class UserServiceImp implements UserService {
             user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         } else throw new MessageDescriptorFormatException("new password does not match with raw password");
         userRepo.save(user);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userDetails.getUser();
     }
 }
