@@ -1,5 +1,6 @@
 package com.cms.config.jwt;
 
+import com.cms.constants.ERole;
 import com.cms.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -49,14 +50,10 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetailsImpl(User user){
         this.user = user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-//                List<GrantedAuthority> authorities = new SimpleGrantedAuthority();
-
-        return authorities;
+        return null;
     }
 
     @Override
@@ -67,6 +64,11 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUserName();
+    }
+
+    public String getRole(){
+        Integer roleInInt = user.getRole();
+        return ERole.valueOfType(roleInInt).getTypeInStr();
     }
 
     @Override

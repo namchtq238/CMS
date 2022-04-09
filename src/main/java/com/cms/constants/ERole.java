@@ -1,7 +1,4 @@
 package com.cms.constants;
-
-import com.cms.entity.Role;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +9,7 @@ public enum ERole {
 
     private Integer type;
     private String typeInStr;
+
     ERole(Integer type, String typeInStr){
         this.type = type;
         this.typeInStr = typeInStr;
