@@ -27,8 +27,6 @@ public class User {
 
     private String email;
 
-    private Integer Role;
-
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Staff staff;
 
