@@ -19,8 +19,6 @@ public class Idea {
 
     private String description;
 
-    private String url;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;

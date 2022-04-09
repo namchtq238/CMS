@@ -1,5 +1,6 @@
 package com.cms.entity;
 
+import com.cms.constants.LikeStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,7 @@ public class Likes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean isLike;
+    private Integer isLike;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")

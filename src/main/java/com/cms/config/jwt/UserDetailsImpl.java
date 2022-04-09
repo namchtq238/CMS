@@ -102,4 +102,5 @@ public class UserDetailsImpl implements UserDetails {
 //    }
 //
     public String getEmail() {return user.getEmail();}
+    public User getUser() {return this.user;}
 }
