@@ -3,7 +3,7 @@ package com.cms.config;
 import java.util.Collection;
 import java.util.Collections;
 
-class PaginationT<E> {
+public class PaginationT<E> {
     long total = 0L;
     Collection<E> elements;
 
