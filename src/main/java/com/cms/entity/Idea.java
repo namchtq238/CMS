@@ -19,6 +19,8 @@ public class Idea {
 
     private String description;
 
+    private String documentUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
