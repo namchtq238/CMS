@@ -19,8 +19,6 @@ public class Category {
 
     private String description;
 
-    private Instant completedDate;
-
     private boolean active = false;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -1,5 +1,6 @@
 package com.cms.service;
 
+import com.cms.controller.request.CategoryReq;
 import com.cms.controller.response.CategoryRes;
 import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
@@ -8,8 +9,10 @@ import com.cms.entity.Idea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,17 +22,65 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<CategoryRes> categoryList() {
-        List<Category> list = categoryRepo.getAll();
+        List<Category> list = categoryRepo.findAll();
         return list.stream().map(category -> {
             CategoryRes res = new CategoryRes();
-            if (category == null) return null;
+//            if (category == null) return null;
             res.setActive(category.isActive());
-            res.setCompletedDate(category.getCompletedDate() == null ? null : category.getCompletedDate().toString());
             res.setDescription(category.getDescription());
-            res.setCreatedDate(category.getCreatedDate() == null ? null : category.getCreatedDate().toString());
+            res.setCreatedDate(category.getCreatedDate().toString());
             res.setIdea(category.getIdea().stream().map(Idea::getId).collect(Collectors.toList()));
             res.setQa(category.getQa().getId());
             return res;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public CategoryReq addCategory(CategoryReq categoryReq) {
+        Category category = new Category();
+        category.setActive(categoryReq.isActive());
+        category.setCreatedDate(Instant.now());
+        category.setDescription(categoryReq.getDescription());
+        categoryRepo.save(category);
+        return categoryReq;
+    }
+
+    @Override
+    public CategoryRes getACategory(Long id) {
+        Optional<Category> category = categoryRepo.findById(id);
+        if (category.isPresent()){
+            Category category1 = category.get();
+            CategoryRes res = new CategoryRes();
+            res.setCreatedDate(category1.getCreatedDate().toString());
+            res.setDescription(category1.getDescription());
+            res.setActive(category1.isActive());
+            return res;
+        }
+        return null;
+    }
+
+    @Override
+    public CategoryRes putACategory(Long id, CategoryReq categoryReq) {
+        Optional<Category> category = categoryRepo.findById(id);
+        if (category.isPresent()){
+            Category category1 = category.get();
+            category1.setDescription(categoryReq.getDescription());
+            category1.setActive(categoryReq.isActive());
+            categoryRepo.save(category1);
+            CategoryRes res = new CategoryRes();
+            res.setCreatedDate(category1.getCreatedDate().toString());
+            res.setDescription(category1.getDescription());
+            res.setActive(category1.isActive());
+            return res;
+        }
+        return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+        Optional<Category> category = categoryRepo.findById(id);
+        if (category.isPresent()) {
+            categoryRepo.delete(category.get());
+        }
     }
 }

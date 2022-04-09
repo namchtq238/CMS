@@ -15,5 +15,7 @@ public interface CategoryRepo extends JpaRepository<Category, Long> {
 //            "c.active as active, q.id as qa,  FROM category as C" +
 //            "LEFT JOIN qa as q on c.qa_id = q.id" +
 //            "LEFT JOIN idea as i on c.idea_id = i.id")
-    List<Category> getAll();
+    @Query(nativeQuery = true, value = "SELECT * FROM category")
+    List<Category> findAll();
+
 }
