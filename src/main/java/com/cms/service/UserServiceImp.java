@@ -7,10 +7,8 @@ import com.cms.controller.request.UserReq;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
 import com.cms.database.UserRepository;
-import com.cms.entity.Role;
 import com.cms.entity.User;
 import lombok.SneakyThrows;
-import org.aspectj.bridge.Message;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +17,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +39,7 @@ public class UserServiceImp implements UserService {
         if(userRepo.existsByUserName(req.getUsername())) throw new MessageDescriptorFormatException(String.format("Email %s already existed", req.getUsername()));
         user.setUserName(req.getUsername());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
-//        user.setRoles(ERole.ADMIN);
+        user.setRole(ERole.STAFF.getValue());
         userRepo.save(user);
     }
 

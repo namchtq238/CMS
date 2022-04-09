@@ -14,8 +14,8 @@ public class LoginResponse {
     private String token;
     String username;
     String email;
-    List<String> roles;
-    public LoginResponse(String token,String username, String email, List<String> roles){
+    String roles;
+    public LoginResponse(String token,String username, String email, String roles){
         this.token = token;
         this.username = username;
         this.email = email;
