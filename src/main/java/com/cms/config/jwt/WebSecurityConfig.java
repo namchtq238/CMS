@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -47,8 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-        auth.userDetailsService(userDetailsService) // Cung cáp userservice cho spring security
-                .passwordEncoder(passwordEncoder()); // cung cấp password encoder
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder()); // cung cấp password encoder
     }
 
     @Override
@@ -57,13 +57,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors() // Ngăn chặn request từ một domain khác
                 .and()
                 .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt)
-                .and()
+//                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt)
+//                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/process").permitAll()
                 .antMatchers("/user/**").permitAll() // Cho phép tất cả mọi người truy cập vào địa chỉ này
-                .anyRequest().authenticated(); // Tất cả các request khác đều cần phải xác thực mới được truy cập
+                .anyRequest().authenticated()// Tất cả các request khác đều cần phải xác thực mới được truy cập
+                .and()
+                .httpBasic()
+                .authenticationEntryPoint(authEntryPointJwt);
 
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
