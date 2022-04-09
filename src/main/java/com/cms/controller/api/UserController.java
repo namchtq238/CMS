@@ -49,7 +49,7 @@ public class UserController {
                 roles));
         }
         catch (Exception exception){
-            throw new MessageDescriptorFormatException("username/password is incorrect");
+            throw new MessageDescriptorFormatException("something went wrong");
         }
     }
 

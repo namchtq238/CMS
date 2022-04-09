@@ -21,6 +21,8 @@ public class Category {
 
     private Instant completedDate;
 
+    private boolean active = false;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "qa_id", referencedColumnName = "id")
     private QA qa;
