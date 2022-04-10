@@ -3,6 +3,7 @@ package com.cms.controller.api;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,8 @@ public class IdeaController {
         }
     }
 
-    @PostMapping(value = "/upload", consumes = "application/json", produces = "multipart/form-data")
-    public ResponseEntity<?> uploadIdea(@RequestBody UploadReq req){
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
+    public ResponseEntity<?> uploadIdea(@ModelAttribute UploadReq req){
         try {
             ideaService.uploadDocumentInScheduled(req);
             return ResponseEntity.ok("Upload Success");

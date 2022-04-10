@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
@@ -76,9 +77,9 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public boolean checkClosureTime(Instant startDate, Instant endDate) {
+    public boolean checkClosureTime(String startDate, String endDate) {
         Instant time = Instant.now();
-        if(time.compareTo(startDate) >= 0 && time.compareTo(endDate) <=0 ) return true;
+        if(time.compareTo(Instant.parse(startDate)) >= 0 && time.compareTo(Instant.parse(endDate)) <=0 ) return true;
         return false;
     }
 

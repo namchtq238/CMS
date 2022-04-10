@@ -12,7 +12,7 @@ import java.time.Instant;
 public interface IdeaService {
     PaginationT<ListIdeaRes> findIdea(Integer page, Integer size);
 
-    boolean checkClosureTime(Instant startDate, Instant endDate);
+    boolean checkClosureTime(String startDate, String endDate);
 
     void uploadDocumentInScheduled(UploadReq req) throws IOException;
 }

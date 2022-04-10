@@ -2,16 +2,15 @@ package com.cms.controller.request;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.Instant;
 
 @Getter
 @Setter
 public class UploadReq {
     Long id;
-    Instant startDate;
-    Instant endDate;
-    File file;
+    String startDate;
+    String endDate;
+    MultipartFile file;
     Long categoryId;
 }
