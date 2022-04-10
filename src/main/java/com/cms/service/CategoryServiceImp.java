@@ -25,7 +25,7 @@ public class CategoryServiceImp implements CategoryService {
         List<Category> list = categoryRepo.findAll();
         return list.stream().map(category -> {
             CategoryRes res = new CategoryRes();
-//            if (category == null) return null;
+            if (category == null) return null;
             res.setActive(category.isActive());
             res.setDescription(category.getDescription());
             res.setCreatedDate(category.getCreatedDate().toString());

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
+
     @Autowired
     CategoryService categoryService;
 
@@ -21,6 +22,7 @@ public class CategoryController {
             return ResponseEntity.internalServerError().body("An error occurred while fetching category");
         }
     }
+
     @PostMapping()
     public ResponseEntity<?> addCategory(@RequestBody CategoryReq categoryReq){
         try {
@@ -30,6 +32,7 @@ public class CategoryController {
             return ResponseEntity.internalServerError().body("An error occurred while posting category");
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getACategory(@PathVariable Long id){
         try {
@@ -39,6 +42,7 @@ public class CategoryController {
             return ResponseEntity.internalServerError().body("An error occurred while fetching category");
         }
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> putACategory(@PathVariable Long id, @RequestBody CategoryReq categoryReq){
         try {
@@ -48,6 +52,7 @@ public class CategoryController {
             return ResponseEntity.internalServerError().body("An error occurred while fetching category");
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         try {

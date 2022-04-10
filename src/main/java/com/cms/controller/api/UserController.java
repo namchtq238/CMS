@@ -8,6 +8,7 @@ import com.cms.controller.request.UserReq;
 import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
+import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class UserController {
                 roles));
         }
         catch (Exception exception){
-            throw new MessageDescriptorFormatException("something went wrong");
+            return ResponseEntity.internalServerError().body(String.format("Code Error: %s ", exception.getLocalizedMessage()));
         }
     }
 

@@ -74,6 +74,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getRole(){
         Integer roleInInt = user.getRole();
+        if(roleInInt == null) return "";
         return ERole.valueOfType(roleInInt).getTypeInStr();
     }
 

@@ -1,7 +1,7 @@
 package com.cms.database.converter;
 
 public interface DepartmentConverter {
-    String getId();
+    Long getId();
     String getName();
     String getQaName();
 }
