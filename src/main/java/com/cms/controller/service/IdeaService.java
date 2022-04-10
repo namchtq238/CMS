@@ -10,4 +10,6 @@ public interface IdeaService {
     PaginationT<ListIdeaRes> findIdea(Integer page, Integer size);
 
     void uploadDocumentToGoogleCloud(File file) throws IOException;
+
+    void uploadDocumentInScheduled(Long id, File file);
 }
