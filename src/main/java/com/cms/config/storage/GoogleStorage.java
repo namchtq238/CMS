@@ -47,7 +47,7 @@ public class GoogleStorage {
     }
 
     public UploadFileResDTO uploadFileToGoogleCloud(MultipartFile file) throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:starry-lens-346706-2b23657a2883.json");
+        Resource resource = resourceLoader.getResource("classpath:cms-project-346807-b0d5b16b77e0.json");
         InputStream inputStream = resource.getInputStream();
         Storage storage = StorageOptions.newBuilder()
                 .setCredentials(ServiceAccountCredentials.fromStream(inputStream))
