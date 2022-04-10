@@ -47,13 +47,13 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public CategoryRes getACategory(Long id) {
-        Optional<Category> category = categoryRepo.findById(id);
-        if (category.isPresent()){
-            Category category1 = category.get();
+        Optional<Category> opt = categoryRepo.findById(id);
+        if (opt.isPresent()){
+            Category category = opt.get();
             CategoryRes res = new CategoryRes();
-            res.setCreatedDate(category1.getCreatedDate().toString());
-            res.setDescription(category1.getDescription());
-            res.setActive(category1.isActive());
+            res.setCreatedDate(category.getCreatedDate().toString());
+            res.setDescription(category.getDescription());
+            res.setActive(category.isActive());
             return res;
         }
         return null;
@@ -61,16 +61,16 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public CategoryRes putACategory(Long id, CategoryReq categoryReq) {
-        Optional<Category> category = categoryRepo.findById(id);
-        if (category.isPresent()){
-            Category category1 = category.get();
-            category1.setDescription(categoryReq.getDescription());
-            category1.setActive(categoryReq.isActive());
-            categoryRepo.save(category1);
+        Optional<Category> opt = categoryRepo.findById(id);
+        if (opt.isPresent()){
+            Category category = opt.get();
+            category.setDescription(categoryReq.getDescription());
+            category.setActive(categoryReq.isActive());
+            categoryRepo.save(category);
             CategoryRes res = new CategoryRes();
-            res.setCreatedDate(category1.getCreatedDate().toString());
-            res.setDescription(category1.getDescription());
-            res.setActive(category1.isActive());
+            res.setCreatedDate(category.getCreatedDate().toString());
+            res.setDescription(category.getDescription());
+            res.setActive(category.isActive());
             return res;
         }
         return null;

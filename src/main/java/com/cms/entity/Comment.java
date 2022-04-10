@@ -22,4 +22,6 @@ public class Comment {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
+
+    private boolean anonymous = false;
 }

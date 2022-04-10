@@ -34,4 +34,7 @@ public class Idea {
 
     @OneToMany(mappedBy = "idea", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<Comment> comments;
+
+    private boolean anonymous = false;
+
 }
