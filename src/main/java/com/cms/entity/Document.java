@@ -21,4 +21,6 @@ public class Document {
     private String name;
 
     private String url;
+
+    private Long categoryId;
 }
