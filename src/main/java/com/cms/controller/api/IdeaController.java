@@ -14,10 +14,11 @@ public class IdeaController {
     IdeaService ideaService;
 
     @GetMapping("")
-    public ResponseEntity<?> getListIdea(@RequestParam(name = "page", defaultValue = "0") Integer page,
+    public ResponseEntity<?> getListIdea(@RequestParam(name = "categoryId") Long id,
+                                         @RequestParam(name = "page", defaultValue = "0") Integer page,
                                          @RequestParam(name = "size", defaultValue = "5") Integer size){
         try{
-            return ResponseEntity.ok(ideaService.findIdea(page,size));
+            return ResponseEntity.ok(ideaService.findIdea(id,page,size));
         }catch (Exception ex){
             return ResponseEntity.internalServerError().body(String.format("We have something wrong with %s",ex.getCause()));
         }

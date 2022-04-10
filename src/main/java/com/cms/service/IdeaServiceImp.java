@@ -52,11 +52,11 @@ public class IdeaServiceImp implements IdeaService {
     private PlatformTransactionManager transactionManager;
 
     @Override
-    public PaginationT<ListIdeaRes> findIdea(Integer page, Integer size) {
+    public PaginationT<ListIdeaRes> findIdea(Long cateId, Integer page, Integer size) {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
         Sort sort = Sort.by("id").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<IdeaConverter> data = ideaRepository.findAllIdea(pageable);
+        Page<IdeaConverter> data = ideaRepository.findByCategoryId(cateId, pageable);
         list.setItems(data.stream().map(converter -> {
             ListIdeaRes res = new ListIdeaRes();
             if (converter == null) return null;

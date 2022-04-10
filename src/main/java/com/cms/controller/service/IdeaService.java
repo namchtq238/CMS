@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 public interface IdeaService {
-    PaginationT<ListIdeaRes> findIdea(Integer page, Integer size);
+    PaginationT<ListIdeaRes> findIdea(Long cateId, Integer page, Integer size);
 
     boolean checkClosureTime(String startDate, String endDate);
 
