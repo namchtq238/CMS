@@ -1,4 +1,4 @@
-package com.cms.config;
+package com.cms.config.storage;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.BlobId;

@@ -1,6 +1,7 @@
 package com.cms.database;
 
 import com.cms.database.converter.IdeaConverter;
+import com.cms.database.converter.IdeaDetailConverter;
 import com.cms.entity.Idea;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +29,7 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "LEFT JOIN comment as m on i.id = m.idea_id " +
             "GROUP BY i.id ", nativeQuery = true)
     Page<IdeaConverter> findAllIdea(Pageable pageable);
+//
+//    @Query(value = "", nativeQuery = true)
+//    IdeaDetailConverter getIdeaDetail();
 }

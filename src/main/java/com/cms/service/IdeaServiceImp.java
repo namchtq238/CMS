@@ -1,6 +1,8 @@
 package com.cms.service;
 
 import com.cms.config.PaginationT;
+import com.cms.config.dto.UploadFileResDTO;
+import com.cms.config.storage.GoogleStorage;
 import com.cms.controller.response.ListIdeaRes;
 import com.cms.controller.service.IdeaService;
 import com.cms.database.IdeaRepository;
@@ -13,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -21,6 +26,8 @@ public class IdeaServiceImp implements IdeaService {
     @Autowired
     IdeaRepository ideaRepository;
 
+    @Autowired
+    GoogleStorage googleStorage;
     @Override
     public PaginationT<ListIdeaRes> findIdea(Integer page, Integer size) {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
@@ -44,5 +51,12 @@ public class IdeaServiceImp implements IdeaService {
         }).collect(Collectors.toList()));
         list.setTotal(data.getTotalElements());
         return list;
+    }
+
+    @Override
+    @Transactional(rollbackOn = RuntimeException.class)
+    public void uploadDocumentToGoogleCloud(File file) throws IOException {
+        UploadFileResDTO uploadDto = googleStorage.uploadFileToGoogleCloud(file);
+
     }
 }

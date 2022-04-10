@@ -5,6 +5,7 @@ import com.cms.controller.response.DepartmentResponse;
 import com.cms.controller.service.DepartmentService;
 import com.cms.database.DepartmentsRepo;
 import com.cms.database.converter.DepartmentConverter;
+import com.cms.entity.Departments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,5 +38,11 @@ public class DepartmentServiceImp implements DepartmentService {
             return res;
         }).collect(Collectors.toList()));
         return result;
+    }
+
+    @Override
+    public DepartmentResponse getDepartmentDetail(Long id) {
+        Optional<Departments> departments = departmentsRepo.findById(id);
+        return null;
     }
 }

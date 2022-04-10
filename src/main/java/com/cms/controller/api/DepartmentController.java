@@ -27,4 +27,12 @@ public class DepartmentController {
             return ResponseEntity.internalServerError().body(ex.getLocalizedMessage());
         }
     }
+    @GetMapping("detail")
+    public ResponseEntity<?> getDepartmentDetail(){
+        try{
+            return null;
+        }catch (Exception ex){
+            return ResponseEntity.internalServerError().body(ex.getLocalizedMessage());
+        }
+    }
 }

@@ -81,7 +81,7 @@ public class UserController {
             userService.updatePassword(req);
             return ResponseEntity.ok("Success");
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getMessage());
+            return ResponseEntity.internalServerError().body(ex.getLocalizedMessage());
         }
     }
 }
