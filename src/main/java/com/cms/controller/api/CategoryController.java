@@ -19,7 +19,7 @@ public class CategoryController {
             return ResponseEntity.ok().body(categoryService.categoryList());
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body("An error occurred while fetching category");
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -29,7 +29,7 @@ public class CategoryController {
             return ResponseEntity.ok().body(categoryService.addCategory(categoryReq));
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body("An error occurred while posting category");
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -39,7 +39,7 @@ public class CategoryController {
             return ResponseEntity.ok().body(categoryService.getACategory(id));
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body("An error occurred while fetching category");
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ public class CategoryController {
             return ResponseEntity.ok().body(categoryService.putACategory(id, categoryReq));
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body("An error occurred while fetching category");
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ public class CategoryController {
             return ResponseEntity.ok("Delete Success");
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body("An error occurred while delete category");
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
