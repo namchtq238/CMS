@@ -17,7 +17,7 @@ public class IdeaController {
 
 
     @GetMapping("")
-    public ResponseEntity<?> getListIdea(@RequestParam(name = "departmentId") Long id,
+    public ResponseEntity<?> getListIdea(@RequestParam(name = "departmentId", required = false) Long id,
                                          @RequestParam(name = "page", defaultValue = "0") Integer page,
                                          @RequestParam(name = "size", defaultValue = "5") Integer size){
         try{
