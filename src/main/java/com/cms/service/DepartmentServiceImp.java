@@ -35,6 +35,9 @@ public class DepartmentServiceImp implements DepartmentService {
             res.setId(converter.getId());
             res.setName(converter.getName());
             res.setQaName(converter.getQaName());
+            res.setStartDate(converter.getStartDate());
+            res.setClouserDate(converter.getClosureDate());
+            res.setClosureDateIdea(converter.getClosureDateIdea());
             return res;
         }).collect(Collectors.toList()));
         return result;

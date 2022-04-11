@@ -10,7 +10,8 @@ import java.time.Instant;
 @Getter
 @Setter
 public class UploadReq {
-    Long id;
+    Long userId;
+    Long departmentId;
     String startDate;
     String endDate;
     MultipartFile file;

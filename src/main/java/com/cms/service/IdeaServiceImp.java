@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -105,7 +106,7 @@ public class IdeaServiceImp implements IdeaService {
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public UploadFileResDTO uploadDocumentInScheduled(UploadReq req){
-        Optional<User> userOpt = userRepo.findById(req.getId());
+        Optional<User> userOpt = userRepo.findById(req.getUserId());
         if(userOpt.isEmpty())
             throw new RuntimeException("Not Found");
         User user = userOpt.get();
@@ -132,7 +133,7 @@ public class IdeaServiceImp implements IdeaService {
         document.setCreatedDate(Instant.now());
         document.setUrlDownload(fileDownloadUri);
         document.setCategoryId(req.getCategoryId());
-        document.setUserId(req.getId());
+        document.setUserId(req.getUserId());
         documentRepo.save(document);
 
         //save Idea
@@ -142,6 +143,7 @@ public class IdeaServiceImp implements IdeaService {
         idea.setStartDate(Instant.parse(req.getStartDate()));
         idea.setTimeUp(Instant.parse(req.getEndDate()));
         idea.setCreatedDate(Instant.now());
+        idea.setDepartmentId(req.getDepartmentId());
         Category category = new Category();
         category.setId(req.getCategoryId());
         idea.setCategory(category);
@@ -152,8 +154,8 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public void downloadFile(DownloadReq req, HttpServletResponse response){
-        File file = new File(uploadDir);
+    public void downloadFile(DownloadReq req, HttpServletResponse response) throws Exception{
+        File file = ResourceUtils.getFile(uploadDir);
         String[] files = file.list();
         List<String> filesConvert = Arrays.asList(files);
         List<Document> documents = documentRepo.findByNameIn(filesConvert);

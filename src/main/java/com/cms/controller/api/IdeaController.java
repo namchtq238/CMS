@@ -44,7 +44,7 @@ public class IdeaController {
         }
     }
 
-    @GetMapping("/download-zip")
+    @PostMapping("/download-zip")
     public ResponseEntity<?> downloadAllFile(HttpServletResponse response, @RequestBody DownloadReq req){
         try{
             response.setContentType("application/octet-stream");

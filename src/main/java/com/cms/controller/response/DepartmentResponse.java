@@ -9,4 +9,7 @@ public class DepartmentResponse {
     Long id;
     String name;
     String qaName;
+    String startDate;
+    String closureDateIdea;
+    String clouserDate;
 }

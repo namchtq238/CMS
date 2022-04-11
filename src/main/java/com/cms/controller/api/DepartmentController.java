@@ -1,6 +1,5 @@
 package com.cms.controller.api;
 
-import com.cms.config.PaginationT;
 import com.cms.config.dto.ResponseHelper;
 import com.cms.controller.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/departments")

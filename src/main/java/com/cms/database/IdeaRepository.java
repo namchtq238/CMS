@@ -21,9 +21,7 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "i.description as description, " +
             "i.staff_id as staffId, " +
             "i.category_id as category, " +
-            "GROUP_CONCAT(DISTINCT l.id) as detailLikes, " +
             "count(l.id) as totalLike, " +
-            "GROUP_CONCAT(DISTINCT m.id) as detailComment," +
             "count(m.id) as totalComment " +
             "FROM idea as i " +
             "LEFT JOIN likes as l on i.id = l.idea_id " +
