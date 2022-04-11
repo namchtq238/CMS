@@ -2,6 +2,7 @@ package com.cms.service;
 
 import com.cms.controller.request.CategoryReq;
 import com.cms.controller.response.CategoryRes;
+import com.cms.controller.response.ResponseWrapper;
 import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
 import com.cms.entity.Category;
@@ -21,18 +22,17 @@ public class CategoryServiceImp implements CategoryService {
     CategoryRepo categoryRepo;
 
     @Override
-    public List<CategoryRes> categoryList() {
+    public ResponseWrapper categoryList() {
         List<Category> list = categoryRepo.findAll();
-        return list.stream().map(category -> {
+        List<CategoryRes> listwrapper =  list.stream().map(category -> {
             CategoryRes res = new CategoryRes();
-            if (category == null) return null;
             res.setActive(category.isActive());
-            res.setDescription(category.getDescription());
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setIdea(category.getIdea().stream().map(Idea::getId).collect(Collectors.toList()));
-            res.setQa(category.getQa().getId());
+            res.setName(category.getDescription());
+            res.setId(category.getId());
             return res;
         }).collect(Collectors.toList());
+        return new ResponseWrapper(true, listwrapper.size(), listwrapper);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CategoryServiceImp implements CategoryService {
             Category category = opt.get();
             CategoryRes res = new CategoryRes();
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setDescription(category.getDescription());
+            res.setName(category.getDescription());
             res.setActive(category.isActive());
             return res;
         }
@@ -66,10 +66,11 @@ public class CategoryServiceImp implements CategoryService {
             Category category = opt.get();
             category.setDescription(categoryReq.getName());
             category.setActive(categoryReq.isActive());
+            category.setCreatedDate(Instant.now());
             categoryRepo.save(category);
             CategoryRes res = new CategoryRes();
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setDescription(category.getDescription());
+            res.setName(category.getDescription());
             res.setActive(category.isActive());
             return res;
         }

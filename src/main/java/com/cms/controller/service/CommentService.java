@@ -1,11 +1,9 @@
 package com.cms.controller.service;
 
 import com.cms.controller.request.CommentReq;
-import com.cms.controller.response.CommentRes;
-
-import java.util.List;
+import com.cms.controller.response.ResponseWrapper;
 
 public interface CommentService {
-    List<CommentRes> getAllComment(Long ideaId);
+    ResponseWrapper getAllComment(Long ideaId);
     CommentReq postComment(CommentReq commentReq);
 }

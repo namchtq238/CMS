@@ -8,15 +8,12 @@ import java.util.List;
 @Getter
 @Setter
 public class CategoryRes {
+
     String createdDate;
 
-    String description;
-
-    String completedDate;
+    String name;
 
     boolean active;
 
-    Long qa;
-
-    List<Long> idea;
+    Long id;
 }

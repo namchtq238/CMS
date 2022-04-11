@@ -2,6 +2,7 @@ package com.cms.service;
 
 import com.cms.controller.request.CommentReq;
 import com.cms.controller.response.CommentRes;
+import com.cms.controller.response.ResponseWrapper;
 import com.cms.controller.service.CommentService;
 import com.cms.database.CommentRepo;
 import com.cms.database.IdeaRepository;
@@ -30,9 +31,8 @@ public class CommentServiceImp implements CommentService {
     StaffRepo staffRepo;
 
     @Override
-    public List<CommentRes> getAllComment(Long ideaId) {
-        List<Comment> list = commentRepo.getAllByIdeaId(ideaId);
-        return list.stream().map(comment -> {
+    public ResponseWrapper getAllComment(Long ideaId) {
+        List<CommentRes> commentRes = commentRepo.getAllByIdeaId(ideaId).stream().map(comment -> {
             CommentRes res = new CommentRes();
             if(comment == null) return null;
             res.setContent(comment.getContent());
@@ -40,6 +40,7 @@ public class CommentServiceImp implements CommentService {
             res.setStaffId(comment.getStaff().getId());
             return res;
         }).collect(Collectors.toList());
+        return new ResponseWrapper(true, commentRes.size(), commentRes);
     }
 
     @Override
