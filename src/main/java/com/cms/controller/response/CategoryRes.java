@@ -11,7 +11,7 @@ public class CategoryRes {
 
     String createdDate;
 
-    String description;
+    String name;
 
     boolean active;
 

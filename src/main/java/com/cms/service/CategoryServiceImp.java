@@ -2,6 +2,7 @@ package com.cms.service;
 
 import com.cms.controller.request.CategoryReq;
 import com.cms.controller.response.CategoryRes;
+import com.cms.controller.response.ResponseWrapper;
 import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
 import com.cms.entity.Category;
@@ -21,16 +22,17 @@ public class CategoryServiceImp implements CategoryService {
     CategoryRepo categoryRepo;
 
     @Override
-    public List<CategoryRes> categoryList() {
+    public ResponseWrapper categoryList() {
         List<Category> list = categoryRepo.findAll();
-        return list.stream().map(category -> {
+        List<CategoryRes> listwrapper =  list.stream().map(category -> {
             CategoryRes res = new CategoryRes();
             res.setActive(category.isActive());
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setDescription(category.getDescription());
+            res.setName(category.getDescription());
             res.setId(category.getId());
             return res;
         }).collect(Collectors.toList());
+        return new ResponseWrapper(true, listwrapper.size(), listwrapper);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = new Category();
         category.setActive(categoryReq.isActive());
         category.setCreatedDate(Instant.now());
-        category.setDescription(categoryReq.getDescription());
+        category.setDescription(categoryReq.getName());
         categoryRepo.save(category);
         return categoryReq;
     }
@@ -50,7 +52,7 @@ public class CategoryServiceImp implements CategoryService {
             Category category = opt.get();
             CategoryRes res = new CategoryRes();
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setDescription(category.getDescription());
+            res.setName(category.getDescription());
             res.setActive(category.isActive());
             return res;
         }
@@ -62,13 +64,13 @@ public class CategoryServiceImp implements CategoryService {
         Optional<Category> opt = categoryRepo.findById(id);
         if (opt.isPresent()){
             Category category = opt.get();
-            category.setDescription(categoryReq.getDescription());
+            category.setDescription(categoryReq.getName());
             category.setActive(categoryReq.isActive());
             category.setCreatedDate(Instant.now());
             categoryRepo.save(category);
             CategoryRes res = new CategoryRes();
             res.setCreatedDate(category.getCreatedDate().toString());
-            res.setDescription(category.getDescription());
+            res.setName(category.getDescription());
             res.setActive(category.isActive());
             return res;
         }

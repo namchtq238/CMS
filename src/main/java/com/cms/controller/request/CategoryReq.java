@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CategoryReq {
-    String description;
+    String name;
     boolean active;
 }
