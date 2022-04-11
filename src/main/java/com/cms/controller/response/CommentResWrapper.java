@@ -7,13 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CategoryRes {
-
-    String createdDate;
-
-    String description;
-
-    boolean active;
-
-    Long id;
+public class CommentResWrapper {
+    boolean success;
+    Integer count;
+    List<CommentRes> items;
 }
