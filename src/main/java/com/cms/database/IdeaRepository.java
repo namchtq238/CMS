@@ -32,6 +32,8 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "WHERE d.id = ? " +
             "GROUP BY i.id ", nativeQuery = true)
     Page<IdeaConverter> findByCategoryId(Long departmentId, Pageable pageable);
+
+    
 //
 //    @Query(value = "", nativeQuery = true)
 //    IdeaDetailConverter getIdeaDetail();

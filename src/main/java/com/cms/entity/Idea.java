@@ -22,7 +22,9 @@ public class Idea {
 
     private String description;
 
-    private Long documentId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "document_id", referencedColumnName = "id")
+    private Document document;
 
     private Long departmentId;
 
@@ -32,7 +34,7 @@ public class Idea {
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
