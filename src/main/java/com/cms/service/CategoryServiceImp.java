@@ -22,9 +22,9 @@ public class CategoryServiceImp implements CategoryService {
     CategoryRepo categoryRepo;
 
     @Override
-    public ResponseWrapper categoryList() {
+    public List<CategoryRes> categoryList() {
         List<Category> list = categoryRepo.findAll();
-        List<CategoryRes> listwrapper =  list.stream().map(category -> {
+        return list.stream().map(category -> {
             CategoryRes res = new CategoryRes();
             res.setActive(category.isActive());
             res.setCreatedDate(category.getCreatedDate().toString());
@@ -32,7 +32,6 @@ public class CategoryServiceImp implements CategoryService {
             res.setId(category.getId());
             return res;
         }).collect(Collectors.toList());
-        return new ResponseWrapper(true, listwrapper.size(), listwrapper);
     }
 
     @Override
@@ -78,10 +77,12 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         Optional<Category> category = categoryRepo.findById(id);
         if (category.isPresent()) {
             categoryRepo.delete(category.get());
+            return true;
         }
+        return false;
     }
 }

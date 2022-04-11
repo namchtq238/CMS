@@ -1,8 +1,11 @@
 package com.cms.controller.api;
 
+import com.cms.config.dto.ResponseHelper;
 import com.cms.controller.request.CategoryReq;
 import com.cms.controller.service.CategoryService;
+import com.google.api.Http;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,54 +16,56 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    ResponseHelper responseHelper;
+
     @GetMapping()
     public ResponseEntity<?> getAllCategory(){
         try {
-            return ResponseEntity.ok().body(categoryService.categoryList());
+            return responseHelper.successResp(categoryService.categoryList(), HttpStatus.OK);
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping()
     public ResponseEntity<?> addCategory(@RequestBody CategoryReq categoryReq){
         try {
-            return ResponseEntity.ok().body(categoryService.addCategory(categoryReq));
+            return responseHelper.successResp(categoryService.addCategory(categoryReq), HttpStatus.CREATED);
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.NO_CONTENT);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getACategory(@PathVariable Long id){
         try {
-            return ResponseEntity.ok().body(categoryService.getACategory(id));
+            return responseHelper.successResp(categoryService.getACategory(id), HttpStatus.OK);
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> putACategory(@PathVariable Long id, @RequestBody CategoryReq categoryReq){
         try {
-            return ResponseEntity.ok().body(categoryService.putACategory(id, categoryReq));
+            return responseHelper.successResp(categoryService.putACategory(id, categoryReq), HttpStatus.CREATED);
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.NO_CONTENT);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         try {
-            categoryService.delete(id);
-            return ResponseEntity.ok("Delete Success");
+            return responseHelper.successResp(categoryService.delete(id), HttpStatus.OK);
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
 }

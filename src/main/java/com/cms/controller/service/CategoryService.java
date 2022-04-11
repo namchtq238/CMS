@@ -7,9 +7,9 @@ import com.cms.controller.response.ResponseWrapper;
 import java.util.List;
 
 public interface CategoryService {
-    ResponseWrapper categoryList();
+    List<CategoryRes> categoryList();
     CategoryReq addCategory(CategoryReq categoryReq);
     CategoryRes getACategory(Long id);
     CategoryRes putACategory(Long id, CategoryReq categoryReq);
-    void delete(Long id);
+    boolean delete(Long id);
 }
