@@ -13,13 +13,15 @@ import java.util.List;
 @Getter
 @Setter
 public class ListIdeaRes {
+    Long ideaId;
+
     String timeUp;
 
     String description;
 
     Long staffId;
 
-    Long categoryId;
+    Long departmentId;
 
     String likesList;
 
@@ -28,4 +30,6 @@ public class ListIdeaRes {
     Integer totalLike;
 
     Integer totalComment;
+
+    Integer status;
 }

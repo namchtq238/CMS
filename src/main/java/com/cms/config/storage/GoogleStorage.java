@@ -1,65 +1,77 @@
 package com.cms.config.storage;
 
-import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
-import com.cms.config.dto.UploadFileResDTO;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Collections;
 
-@Component
-public class GoogleStorage {
-    @Value("${google_storage.endpoint}")
-    private String ENDPOINT;
-    @Value("${google_storage.bucketName}")
-    private String BUCKET_NAME;
-    @Value("${google_storage.projectId}")
-    private String PROJECT_ID;
+import com.cms.config.storage.GoogleStorageInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-    private ResourceLoader resourceLoader;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 
-    @Autowired
-    public GoogleStorage(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+@Service
+public class GoogleStorage implements GoogleStorageInterface {
+    @Value("${google.service_account_email}")
+    private String serviceAccountEmail;
+
+    @Value("${google.application_name}")
+    private String applicationName;
+
+    @Value("${google.service_account_key}")
+    private String serviceAccountKey;
+
+    @Value("${google.folder_id}")
+    private String folderID;
+
+    public Drive getDriveService() {
+        Drive service = null;
+        try {
+
+            URL resource = GoogleStorage.class.getResource("/" + this.serviceAccountKey);
+            java.io.File key = Paths.get(resource.toURI()).toFile();
+            HttpTransport httpTransport = new NetHttpTransport();
+            JacksonFactory jsonFactory = new JacksonFactory();
+
+            GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+                    .setJsonFactory(jsonFactory).setServiceAccountId(serviceAccountEmail)
+                    .setServiceAccountScopes(Collections.singleton(DriveScopes.DRIVE))
+                    .setServiceAccountPrivateKeyFromP12File(key).build();
+            service = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName(applicationName)
+                    .setHttpRequestInitializer(credential).build();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+        return service;
+
     }
 
-    public static File convert(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        convFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
+    @Override
+    public File upLoadFile(String fileName, String filePath, String mimeType) {
+        File file = new File();
+        try {
+            java.io.File fileUpload = new java.io.File(filePath);
+            com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
+            fileMetadata.setMimeType(mimeType);
+            fileMetadata.setName(fileName);
+            fileMetadata.setParents(Collections.singletonList(folderID));
+            com.google.api.client.http.FileContent fileContent = new FileContent(mimeType, fileUpload);
+            file = getDriveService().files().create(fileMetadata, fileContent)
+                    .setFields("id,webContentLink,webViewLink").execute();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return file;
     }
 
-    public UploadFileResDTO uploadFileToGoogleCloud(MultipartFile file) throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:cms-project-346807-b0d5b16b77e0.json");
-        InputStream inputStream = resource.getInputStream();
-        Storage storage = StorageOptions.newBuilder()
-                .setCredentials(ServiceAccountCredentials.fromStream(inputStream))
-                .build()
-                .getService();
-        String filename = file.getName().replaceAll(" ", "");
-        BlobId blobId = BlobId.of(BUCKET_NAME, filename);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-        storage.create(blobInfo, Files.readAllBytes(convert(file).toPath()));
-        UploadFileResDTO dto = new UploadFileResDTO();
-        dto.setUrl(ENDPOINT + "/" + BUCKET_NAME + "/" + filename);
-        dto.setName(filename);
-        return dto;
-    }
 }

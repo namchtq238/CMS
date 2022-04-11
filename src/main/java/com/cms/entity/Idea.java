@@ -21,6 +21,8 @@ public class Idea {
 
     private Long documentId;
 
+    private Long departmentId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;

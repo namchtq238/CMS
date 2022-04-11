@@ -10,6 +10,4 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Long> {
-    @Query(value = "", nativeQuery = true)
-    List<Category> findAll();
 }

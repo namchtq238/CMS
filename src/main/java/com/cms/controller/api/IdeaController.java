@@ -14,7 +14,7 @@ public class IdeaController {
     IdeaService ideaService;
 
     @GetMapping("")
-    public ResponseEntity<?> getListIdea(@RequestParam(name = "categoryId") Long id,
+    public ResponseEntity<?> getListIdea(@RequestParam(name = "departmentId") Long id,
                                          @RequestParam(name = "page", defaultValue = "0") Integer page,
                                          @RequestParam(name = "size", defaultValue = "5") Integer size){
         try{
@@ -27,8 +27,7 @@ public class IdeaController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> uploadIdea(@ModelAttribute UploadReq req){
         try {
-            ideaService.uploadDocumentInScheduled(req);
-            return ResponseEntity.ok("Upload Success");
+            return ResponseEntity.ok(ideaService.uploadDocumentInScheduled(req));
         }catch (Exception ex){
             return ResponseEntity.internalServerError().body(String.format("We have something wrong with %s",ex.getCause()));
         }
