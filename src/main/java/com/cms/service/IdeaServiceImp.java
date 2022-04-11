@@ -8,10 +8,12 @@ import com.cms.constants.ERole;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.ListIdeaRes;
 import com.cms.controller.service.IdeaService;
+import com.cms.database.CategoryRepo;
 import com.cms.database.DocumentRepo;
 import com.cms.database.IdeaRepository;
 import com.cms.database.UserRepository;
 import com.cms.database.converter.IdeaConverter;
+import com.cms.entity.Category;
 import com.cms.entity.Document;
 import com.cms.entity.Idea;
 import com.cms.entity.User;
@@ -45,6 +47,8 @@ public class IdeaServiceImp implements IdeaService {
     @Autowired
     FileStorageService fileStorageService;
 
+    @Autowired
+    CategoryRepo categoryRepo;
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size) {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
@@ -80,7 +84,6 @@ public class IdeaServiceImp implements IdeaService {
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public UploadFileResDTO uploadDocumentInScheduled(UploadReq req){
-        // Begin transaction here
         Optional<User> userOpt = userRepo.findById(req.getId());
         if(userOpt.isEmpty())
             throw new RuntimeException("Not Found");
@@ -90,10 +93,14 @@ public class IdeaServiceImp implements IdeaService {
         if(!checkClosureTime(req.getStartDate(), req.getEndDate()))
             throw new RuntimeException(String.format("Out of time to submit: %s", new RuntimeException().getLocalizedMessage()));
         String fileName = fileStorageService.storeFile(req.getFile());
+
+        // build uri to download
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download-file/")
                 .path(fileName)
                 .toUriString();
+
+        //build uri to contact
         String fileOriginalUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/")
                 .path(fileName)
@@ -104,18 +111,20 @@ public class IdeaServiceImp implements IdeaService {
         document.setCreatedDate(Instant.now());
         document.setUrlDownload(fileDownloadUri);
         document.setCategoryId(req.getCategoryId());
-        document.setUser_id(req.getId());
+        document.setUserId(req.getId());
         documentRepo.save(document);
+
         //save Idea
-//        Idea idea = new Idea();
-//        idea.setDocumentId(document.getId());
-//        idea.getStaff().setId(req.getId());
-//        idea.setStartDate(Instant.parse(req.getStartDate()));
-//        idea.setTimeUp(Instant.parse(req.getEndDate()));
-//        idea.setCreatedDate(Instant.now());
-//        idea.getCategory().setId(req.getCategoryId());
-//        idea.setDescription(req.getDescription());
-//        ideaRepository.save(idea);
+        Idea idea = new Idea();
+        idea.setDescription(req.getDescription());
+        idea.setDocument(document);
+        idea.setStartDate(Instant.parse(req.getStartDate()));
+        idea.setTimeUp(Instant.parse(req.getEndDate()));
+        idea.setCreatedDate(Instant.now());
+        Category category = new Category();
+        category.setId(req.getCategoryId());
+        idea.setCategory(category);
+        ideaRepository.save(idea);
 
         UploadFileResDTO dto = new UploadFileResDTO(fileName, fileDownloadUri, fileOriginalUri, req.getFile().getContentType(), req.getFile().getSize());
         return dto;
