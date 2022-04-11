@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Random;
 
 @Service
 public class FileStorageServiceImp implements FileStorageService {
@@ -36,7 +37,13 @@ public class FileStorageServiceImp implements FileStorageService {
     @Override
     public String storeFile(MultipartFile file) {
         // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalName = file.getOriginalFilename();
+        String name = originalName.split("\\.")[0];
+        String mime = originalName.split("\\.")[1];
+        StringBuilder builder = new StringBuilder();
+        Random rand = new Random();
+        int ranNum = rand.nextInt(10000)+1;
+        String fileName = StringUtils.cleanPath(builder.append(name).append(ranNum).append(".").append(mime).toString());
 
         try {
             // Check if the file's name contains invalid characters

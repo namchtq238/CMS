@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -15,6 +16,12 @@ public class Departments {
     private Long id;
 
     private String name;
+
+    private Instant startDate;
+
+    private Instant closureDateIdea;
+
+    private Instant closureDate;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "university_id", referencedColumnName = "id")

@@ -1,5 +1,7 @@
 package com.cms.controller.api;
 
+import com.cms.constants.ERole;
+import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -37,4 +40,16 @@ public class IdeaController {
         }
     }
 
+    @GetMapping("/download-zip")
+    public ResponseEntity<?> downloadAllFile(HttpServletResponse response, @RequestBody DownloadReq req){
+        try{
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=download.zip");
+            response.setStatus(HttpServletResponse.SC_OK);
+            if(req.getRole().equals(ERole.ADMIN.getTypeInStr())) ideaService.downloadFile(req, response);
+            return ResponseEntity.ok("ok");
+        }catch (Exception e){
+            throw new RuntimeException("Internal Error!" + e.getMessage());
+        }
+    }
 }

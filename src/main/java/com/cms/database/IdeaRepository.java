@@ -29,7 +29,8 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "LEFT JOIN likes as l on i.id = l.idea_id " +
             "LEFT JOIN comment as m on i.id = m.idea_id " +
             "LEFT JOIN departments as d on i.department_id = d.id " +
-            "WHERE d.id = ? " +
+            "WHERE 1 = 1 " +
+            "AND d.id = ? " +
             "GROUP BY i.id ", nativeQuery = true)
     Page<IdeaConverter> findByCategoryId(Long departmentId, Pageable pageable);
 

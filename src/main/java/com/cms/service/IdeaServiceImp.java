@@ -5,6 +5,7 @@ import com.cms.config.dto.UploadFileResDTO;
 import com.cms.config.storage.FileStorageService;
 import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
+import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.ListIdeaRes;
 import com.cms.controller.service.IdeaService;
@@ -17,18 +18,31 @@ import com.cms.entity.Category;
 import com.cms.entity.Document;
 import com.cms.entity.Idea;
 import com.cms.entity.User;
+import org.hibernate.engine.jdbc.StreamUtils;
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.File;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class IdeaServiceImp implements IdeaService {
@@ -49,6 +63,13 @@ public class IdeaServiceImp implements IdeaService {
 
     @Autowired
     CategoryRepo categoryRepo;
+
+    @Value("${file.upload-dir}")
+    String uploadDir;
+
+    @Value("${file.download-dir}")
+    String downloadDir;
+
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size) {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
@@ -129,4 +150,37 @@ public class IdeaServiceImp implements IdeaService {
         UploadFileResDTO dto = new UploadFileResDTO(fileName, fileDownloadUri, fileOriginalUri, req.getFile().getContentType(), req.getFile().getSize());
         return dto;
     }
+
+    @Override
+    public void downloadFile(DownloadReq req, HttpServletResponse response){
+        File file = new File(uploadDir);
+        String[] files = file.list();
+        List<String> filesConvert = Arrays.asList(files);
+        List<Document> documents = documentRepo.findByNameIn(filesConvert);
+        List<String> listRes = new ArrayList<>();
+        for(Document document : documents){
+            if(document.getCreatedDate().compareTo(Instant.parse(req.getStartDate()))>=0 &&document.getCreatedDate().compareTo(Instant.parse(req.getEndDate()))<=0)
+                listRes.add(document.getName());
+            System.err.println(document);
+        }
+        System.out.println(listRes);
+        try (ZipOutputStream zippedOut = new ZipOutputStream(response.getOutputStream())) {
+            for (String fileRes : listRes) {
+                FileSystemResource resource = new FileSystemResource(fileRes);
+
+                ZipEntry e = new ZipEntry(resource.getFilename());
+                // Configure the zip entry, the properties of the file
+                e.setSize(resource.contentLength());
+                e.setTime(System.currentTimeMillis());
+                // etc.
+                zippedOut.putNextEntry(e);
+                StreamUtils.copy(resource.getInputStream(), zippedOut);
+                zippedOut.closeEntry();
+            }
+            zippedOut.finish();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+    }
 }
+
