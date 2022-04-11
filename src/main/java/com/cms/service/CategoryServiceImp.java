@@ -2,16 +2,13 @@ package com.cms.service;
 
 import com.cms.controller.request.CategoryReq;
 import com.cms.controller.response.CategoryRes;
-import com.cms.controller.response.ResponseWrapper;
 import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
 import com.cms.entity.Category;
-import com.cms.entity.Idea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
