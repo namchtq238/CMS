@@ -10,12 +10,4 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Long> {
-//    @Query(nativeQuery = true, value = "SELECT c.created_date as createdDate," +
-//            "c.description as description, c.completed_date as completedDate," +
-//            "c.active as active, q.id as qa,  FROM category as C" +
-//            "LEFT JOIN qa as q on c.qa_id = q.id" +
-//            "LEFT JOIN idea as i on c.idea_id = i.id")
-    @Query(nativeQuery = true, value = "SELECT * FROM category")
-    List<Category> findAll();
-
 }

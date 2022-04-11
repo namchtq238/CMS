@@ -3,6 +3,7 @@ package com.cms.service;
 import com.cms.config.PaginationT;
 import com.cms.config.dto.UploadFileResDTO;
 import com.cms.config.storage.GoogleStorage;
+import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.ListIdeaRes;
@@ -12,25 +13,20 @@ import com.cms.database.IdeaRepository;
 import com.cms.database.UserRepository;
 import com.cms.database.converter.IdeaConverter;
 import com.cms.entity.Document;
-import com.cms.entity.Idea;
 import com.cms.entity.User;
+import com.google.api.services.drive.model.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,25 +39,25 @@ public class IdeaServiceImp implements IdeaService {
     DocumentRepo documentRepo;
 
     @Autowired
-    GoogleStorage googleStorage;
-
-    @Autowired
     UserRepository userRepo;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    @Autowired
+    GoogleStorageInterface googleStorage;
+
     @Override
-    public PaginationT<ListIdeaRes> findIdea(Integer page, Integer size) {
+    public PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size) {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
         Sort sort = Sort.by("id").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<IdeaConverter> data = ideaRepository.findAllIdea(pageable);
+        Page<IdeaConverter> data = ideaRepository.findByCategoryId(depaId, pageable);
         list.setItems(data.stream().map(converter -> {
             ListIdeaRes res = new ListIdeaRes();
             if (converter == null) return null;
 
-            res.setCategoryId(converter.getCategory());
+            res.setDepartmentId(converter.getCategory());
             res.setDescription(converter.getDescription());
             res.setCommentList(converter.getDetailComment());
             res.setLikesList(converter.getDetailLikes());
@@ -69,6 +65,7 @@ public class IdeaServiceImp implements IdeaService {
             res.setTotalLike(converter.getTotalLike());
             res.setTotalComment(converter.getTotalComment());
             res.setStaffId(converter.getStaffId());
+            res.setIdeaId(converter.getId());
 
             return res;
         }).collect(Collectors.toList()));
@@ -83,13 +80,12 @@ public class IdeaServiceImp implements IdeaService {
         return false;
     }
 
-
     @Override
-
-    public void uploadDocumentInScheduled(UploadReq req) throws IOException{
+    public UploadFileResDTO uploadDocumentInScheduled(UploadReq req){
         // Begin transaction here
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
         TransactionStatus transaction = transactionManager.getTransaction(definition);
+        UploadFileResDTO dto = new UploadFileResDTO();
         try{
             Optional<User> userOpt = userRepo.findById(req.getId());
             if(userOpt.isEmpty())
@@ -99,10 +95,12 @@ public class IdeaServiceImp implements IdeaService {
                 throw new RuntimeException(String.format("Author is not %s", ERole.STAFF));
             if(!checkClosureTime(req.getStartDate(), req.getEndDate()))
                 throw new RuntimeException(String.format("Out of time to submit: %s", new RuntimeException().getLocalizedMessage()));
-            UploadFileResDTO uploadDto = googleStorage.uploadFileToGoogleCloud(req.getFile());
+            File uploadFile = googleStorage.upLoadFile(req.getFile().getName(),req.getFile().getInputStream().toString(),req.getFile().getOriginalFilename().split("\\.")[1]);
             Document document = new Document();
-            document.setUrl(uploadDto.getUrl());
-            document.setName(uploadDto.getName());
+            dto.setUrl(uploadFile.getWebViewLink());
+            dto.setName(uploadFile.getName());
+            document.setUrl(uploadFile.getWebViewLink());
+            document.setName(uploadFile.getName());
             document.setCategoryId(req.getCategoryId());
             document.setUser_id(req.getId());
             documentRepo.save(document);
@@ -111,5 +109,7 @@ public class IdeaServiceImp implements IdeaService {
         }catch (Exception ex){
             transactionManager.rollback(transaction);
         }
+        return dto;
     }
+
 }

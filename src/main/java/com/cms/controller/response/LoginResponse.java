@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class LoginResponse {
-    private String token;
+    String token;
     String username;
     String email;
     String roles;

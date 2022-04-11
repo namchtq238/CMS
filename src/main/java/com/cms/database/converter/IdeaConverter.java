@@ -8,6 +8,8 @@ import com.cms.entity.Staff;
 import java.util.List;
 
 public interface IdeaConverter {
+    Long getId();
+
     String getTimeUp();
 
     String getDescription();

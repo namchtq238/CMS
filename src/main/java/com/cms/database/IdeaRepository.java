@@ -16,7 +16,8 @@ import java.util.Optional;
 public interface IdeaRepository extends JpaRepository<Idea, Long> {
     Optional<Idea> findById(Long id);
 
-    @Query(value = "SELECT i.time_up as timeUp," +
+    @Query(value = "SELECT i.id as id, " +
+            "i.time_up as timeUp," +
             "i.description as description, " +
             "i.staff_id as staffId, " +
             "i.category_id as category, " +
@@ -27,8 +28,10 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "FROM idea as i " +
             "LEFT JOIN likes as l on i.id = l.idea_id " +
             "LEFT JOIN comment as m on i.id = m.idea_id " +
+            "LEFT JOIN departments as d on i.department_id = d.id " +
+            "WHERE d.id = ? " +
             "GROUP BY i.id ", nativeQuery = true)
-    Page<IdeaConverter> findAllIdea(Pageable pageable);
+    Page<IdeaConverter> findByCategoryId(Long departmentId, Pageable pageable);
 //
 //    @Query(value = "", nativeQuery = true)
 //    IdeaDetailConverter getIdeaDetail();
