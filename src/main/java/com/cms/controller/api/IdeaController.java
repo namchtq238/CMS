@@ -7,11 +7,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/ideas")
 public class IdeaController {
     @Autowired
     IdeaService ideaService;
+
 
     @GetMapping("")
     public ResponseEntity<?> getListIdea(@RequestParam(name = "departmentId") Long id,
@@ -25,11 +28,12 @@ public class IdeaController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
-    public ResponseEntity<?> uploadIdea(@ModelAttribute UploadReq req){
+    public ResponseEntity<?> uploadIdea(@ModelAttribute @Valid UploadReq req){
         try {
             return ResponseEntity.ok(ideaService.uploadDocumentInScheduled(req));
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(String.format("We have something wrong with %s",ex.getCause()));
+            return ResponseEntity.internalServerError().body("Upload fail, please try again!" +
+                    " Error code: " + ex.getMessage());
         }
     }
 

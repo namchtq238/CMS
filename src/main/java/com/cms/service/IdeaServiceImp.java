@@ -2,7 +2,7 @@ package com.cms.service;
 
 import com.cms.config.PaginationT;
 import com.cms.config.dto.UploadFileResDTO;
-import com.cms.config.storage.GoogleStorage;
+import com.cms.config.storage.FileStorageService;
 import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
 import com.cms.controller.request.UploadReq;
@@ -13,19 +13,17 @@ import com.cms.database.IdeaRepository;
 import com.cms.database.UserRepository;
 import com.cms.database.converter.IdeaConverter;
 import com.cms.entity.Document;
+import com.cms.entity.Idea;
 import com.cms.entity.User;
-import com.google.api.services.drive.model.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,10 +40,10 @@ public class IdeaServiceImp implements IdeaService {
     UserRepository userRepo;
 
     @Autowired
-    private PlatformTransactionManager transactionManager;
+    GoogleStorageInterface googleStorage;
 
     @Autowired
-    GoogleStorageInterface googleStorage;
+    FileStorageService fileStorageService;
 
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size) {
@@ -73,43 +71,53 @@ public class IdeaServiceImp implements IdeaService {
         return list;
     }
 
-    @Override
     public boolean checkClosureTime(String startDate, String endDate) {
         Instant time = Instant.now();
-        if(time.compareTo(Instant.parse(startDate)) >= 0 && time.compareTo(Instant.parse(endDate)) <=0 ) return true;
+        if(time.compareTo(Instant.parse(startDate)) >= 0 && time.compareTo(Instant.parse(endDate))<= 0) return true;
         return false;
     }
 
     @Override
+    @Transactional(rollbackOn = RuntimeException.class)
     public UploadFileResDTO uploadDocumentInScheduled(UploadReq req){
         // Begin transaction here
-        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-        TransactionStatus transaction = transactionManager.getTransaction(definition);
-        UploadFileResDTO dto = new UploadFileResDTO();
-        try{
-            Optional<User> userOpt = userRepo.findById(req.getId());
-            if(userOpt.isEmpty())
-                throw new RuntimeException("Not Found");
-            User user = userOpt.get();
-            if(!user.getRole().equals(ERole.STAFF.getValue()))
-                throw new RuntimeException(String.format("Author is not %s", ERole.STAFF));
-            if(!checkClosureTime(req.getStartDate(), req.getEndDate()))
-                throw new RuntimeException(String.format("Out of time to submit: %s", new RuntimeException().getLocalizedMessage()));
-            File uploadFile = googleStorage.upLoadFile(req.getFile().getName(),req.getFile().getInputStream().toString(),req.getFile().getOriginalFilename().split("\\.")[1]);
-            Document document = new Document();
-            dto.setUrl(uploadFile.getWebViewLink());
-            dto.setName(uploadFile.getName());
-            document.setUrl(uploadFile.getWebViewLink());
-            document.setName(uploadFile.getName());
-            document.setCategoryId(req.getCategoryId());
-            document.setUser_id(req.getId());
-            documentRepo.save(document);
-            //commit
-            transactionManager.commit(transaction);
-        }catch (Exception ex){
-            transactionManager.rollback(transaction);
-        }
+        Optional<User> userOpt = userRepo.findById(req.getId());
+        if(userOpt.isEmpty())
+            throw new RuntimeException("Not Found");
+        User user = userOpt.get();
+        if(!user.getRole().equals(ERole.STAFF.getValue()))
+            throw new RuntimeException(String.format("Author is not %s", ERole.STAFF));
+        if(!checkClosureTime(req.getStartDate(), req.getEndDate()))
+            throw new RuntimeException(String.format("Out of time to submit: %s", new RuntimeException().getLocalizedMessage()));
+        String fileName = fileStorageService.storeFile(req.getFile());
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/download-file/")
+                .path(fileName)
+                .toUriString();
+        String fileOriginalUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/")
+                .path(fileName)
+                .toUriString();
+        Document document = new Document();
+        document.setUrl(fileOriginalUri);
+        document.setName(fileName);
+        document.setCreatedDate(Instant.now());
+        document.setUrlDownload(fileDownloadUri);
+        document.setCategoryId(req.getCategoryId());
+        document.setUser_id(req.getId());
+        documentRepo.save(document);
+        //save Idea
+//        Idea idea = new Idea();
+//        idea.setDocumentId(document.getId());
+//        idea.getStaff().setId(req.getId());
+//        idea.setStartDate(Instant.parse(req.getStartDate()));
+//        idea.setTimeUp(Instant.parse(req.getEndDate()));
+//        idea.setCreatedDate(Instant.now());
+//        idea.getCategory().setId(req.getCategoryId());
+//        idea.setDescription(req.getDescription());
+//        ideaRepository.save(idea);
+
+        UploadFileResDTO dto = new UploadFileResDTO(fileName, fileDownloadUri, fileOriginalUri, req.getFile().getContentType(), req.getFile().getSize());
         return dto;
     }
-
 }

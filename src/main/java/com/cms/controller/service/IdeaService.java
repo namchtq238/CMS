@@ -13,8 +13,5 @@ import java.time.Instant;
 public interface IdeaService {
     PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size);
 
-    boolean checkClosureTime(String startDate, String endDate);
-
-    UploadFileResDTO uploadDocumentInScheduled(UploadReq req);
-
+    UploadFileResDTO uploadDocumentInScheduled(UploadReq req) throws IOException;
 }

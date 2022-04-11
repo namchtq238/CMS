@@ -40,7 +40,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = new Category();
         category.setActive(categoryReq.isActive());
         category.setCreatedDate(Instant.now());
-        category.setDescription(categoryReq.getDescription());
+        category.setDescription(categoryReq.getName());
         categoryRepo.save(category);
         return categoryReq;
     }
@@ -64,7 +64,7 @@ public class CategoryServiceImp implements CategoryService {
         Optional<Category> opt = categoryRepo.findById(id);
         if (opt.isPresent()){
             Category category = opt.get();
-            category.setDescription(categoryReq.getDescription());
+            category.setDescription(categoryReq.getName());
             category.setActive(categoryReq.isActive());
             categoryRepo.save(category);
             CategoryRes res = new CategoryRes();

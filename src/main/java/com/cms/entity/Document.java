@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -22,5 +23,9 @@ public class Document {
 
     private String url;
 
+    private String urlDownload;
+
     private Long categoryId;
+
+    private Instant createdDate;
 }

@@ -1,0 +1,22 @@
+Detail:
+
+Sửa thời gian xử lý yêu cầu -> Chuỗi thời gian: 
+	- specific -> ngày tạo 
+	- discharge -> khoảng thời gian (gửi 2 khoảng processTimeFrom(from_time) - processTimeTo(to_time))
+Ngày hóa đơn: lấy từ invoice_date trong invoice (Vào list_invoice), trên màn hình chung -> bỏ
+		->change: lấy invoice_date trong bảng invoice
+Truyền thêm 1 attribute count trong list res trả về
+
+Tác nhân: created_by
+	- specific -> mặc định là ?
+	- discharge -> HANDWORK/AUTO
+
+
+
+
+
+6/4/2022:
+note: format code: 1 tab, 1 endl;
+
+change: createNewDischargeInvoice -> Sử dụng jpa, chuyển tham số truyền vào là 1 invoiceRequest - don
+
