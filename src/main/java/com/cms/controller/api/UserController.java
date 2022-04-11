@@ -1,5 +1,6 @@
 package com.cms.controller.api;
 
+import com.cms.config.dto.ResponseHelper;
 import com.cms.config.jwt.JwtUtils;
 import com.cms.config.jwt.UserDetailsImpl;
 import com.cms.controller.request.ChangePasswordReq;
@@ -11,6 +12,7 @@ import com.cms.controller.service.UserService;
 import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +36,9 @@ public class UserController {
     AuthenticationManager authenticate;
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    ResponseHelper responseHelper;
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody @Validated UserReq loginRequest){
         try{
@@ -44,10 +49,10 @@ public class UserController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String roles = userDetails.getRole();
-        return ResponseEntity.ok(new LoginResponse(jwt,
+        return responseHelper.successResp(new LoginResponse(jwt,
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles), HttpStatus.OK);
         }
         catch (Exception exception){
             return ResponseEntity.internalServerError().body(String.format("Code Error: %s ", exception.getLocalizedMessage()));
@@ -58,7 +63,7 @@ public class UserController {
     public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserReq user){
         try{
             userService.registerUser(user);
-            return ResponseEntity.ok("Success");
+            return responseHelper.successResp("Success",HttpStatus.OK);
         }
         catch (RuntimeException ex){
             return ResponseEntity.internalServerError().body(ex.getMessage());
@@ -69,7 +74,7 @@ public class UserController {
     public ResponseEntity<?> updateInfoUser(@RequestBody UserInfoReq req){
         try{
             UserInfoRes user = userService.updateUserInfo(req);
-            return ResponseEntity.ok(user);
+            return responseHelper.successResp(user,HttpStatus.OK);
         }catch (RuntimeException ex){
             return ResponseEntity.internalServerError().body(ex.getMessage());
         }
@@ -79,7 +84,7 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordReq req){
         try{
             userService.updatePassword(req);
-            return ResponseEntity.ok("Success");
+            return responseHelper.successResp("Success",HttpStatus.OK);
         }catch (Exception ex){
             return ResponseEntity.internalServerError().body(ex.getLocalizedMessage());
         }

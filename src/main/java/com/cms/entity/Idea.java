@@ -46,4 +46,5 @@ public class Idea {
 
     private boolean anonymous = false;
 
+    private Instant lastComment;
 }
