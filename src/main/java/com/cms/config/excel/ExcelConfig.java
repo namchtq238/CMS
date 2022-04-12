@@ -14,15 +14,19 @@ import java.util.List;
 @Configuration
 public class ExcelConfig {
     @Bean
-    public static ByteArrayInputStream tutorialsToCSV(List<ListIdeaRes> ideas) {
+    public static ByteArrayInputStream ideasToCSV(List<ListIdeaRes> ideas) {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
             for (ListIdeaRes idea : ideas) {
                 List<String> data = Arrays.asList(
                         String.valueOf(idea.getIdeaId()),
-                        idea.getCommentList(),
-                        idea.getDescription()
+                        idea.getTimeUp(),
+                        idea.getDescription(),
+                        String.valueOf(idea.getStaffId()),
+                        String.valueOf(idea.getDepartmentId()),
+                        String.valueOf(idea.getTotalLike()),
+                        String.valueOf(idea.getTotalComment())
                 );
                 csvPrinter.printRecord(data);
             }

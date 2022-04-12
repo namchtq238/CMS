@@ -23,10 +23,6 @@ public class ListIdeaRes {
 
     Long departmentId;
 
-    String likesList;
-
-    String commentList;
-
     Integer totalLike;
 
     Integer totalComment;

@@ -8,6 +8,7 @@ import com.cms.constants.ERole;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.ListIdeaRes;
+import com.cms.controller.service.ExportService;
 import com.cms.controller.service.IdeaService;
 import com.cms.database.CategoryRepo;
 import com.cms.database.DocumentRepo;
@@ -23,6 +24,7 @@ import org.hibernate.validator.internal.engine.messageinterpolation.parser.Messa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,9 @@ import java.util.zip.ZipOutputStream;
 public class IdeaServiceImp implements IdeaService {
     @Autowired
     IdeaRepository ideaRepository;
+
+    @Autowired
+    ExportService export;
 
     @Autowired
     DocumentRepo documentRepo;
@@ -83,8 +88,6 @@ public class IdeaServiceImp implements IdeaService {
 
             res.setDepartmentId(converter.getCategory());
             res.setDescription(converter.getDescription());
-            res.setCommentList(converter.getDetailComment());
-            res.setLikesList(converter.getDetailLikes());
             res.setTimeUp(converter.getTimeUp());
             res.setTotalLike(converter.getTotalLike());
             res.setTotalComment(converter.getTotalComment());
@@ -170,6 +173,14 @@ public class IdeaServiceImp implements IdeaService {
         }
         zipFile(listRes, ResourceUtils.getFile(downloadDir));
     }
+
+    @Override
+    public InputStreamResource exportAllListIdeaInCsv(Long departmentId) {
+        List<ListIdeaRes> listRes = findIdea(departmentId, 0, 1000).getItems().stream().collect(Collectors.toList());
+        InputStreamResource resource = new InputStreamResource(export.ideasToCsv(listRes));
+        return resource;
+    }
+
     public static void zipFile(List<String> path, File zipPath) throws IOException {
         try {
             FileOutputStream sos = new FileOutputStream(zipPath);

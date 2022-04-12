@@ -6,6 +6,8 @@ import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/ideas")
@@ -54,6 +57,20 @@ public class IdeaController {
             return responseHelper.successResp("Success", HttpStatus.OK);
         }catch (Exception e){
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/export-all")
+    public ResponseEntity<?> exportAllIdea(@RequestParam(name = "departmentId") Long id){
+        try{
+            String filename = "data_idea_" + Instant.now();
+            InputStreamResource file = ideaService.exportAllListIdeaInCsv(id);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/csv"))
+                    .body(file);
+        }catch (Exception e){
+            return responseHelper.infoResp(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

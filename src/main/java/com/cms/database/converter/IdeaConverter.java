@@ -18,11 +18,7 @@ public interface IdeaConverter {
 
      Long getCategory();
 
-    String getDetailLikes();
-
     Integer getTotalLike();
-
-    String getDetailComment();
 
     Integer getTotalComment();
 }
