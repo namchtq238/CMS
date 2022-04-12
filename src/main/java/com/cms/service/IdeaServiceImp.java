@@ -1,6 +1,7 @@
 package com.cms.service;
 
 import com.cms.config.PaginationT;
+import com.cms.config.dto.MailDTO;
 import com.cms.config.dto.UploadFileResDTO;
 import com.cms.config.storage.FileStorageService;
 import com.cms.config.storage.GoogleStorageInterface;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,6 +65,9 @@ public class IdeaServiceImp implements IdeaService {
 
     @Autowired
     FileStorageService fileStorageService;
+
+    @Autowired
+    MailSenderCustom mailSender;
 
     @Autowired
     CategoryRepo categoryRepo;
@@ -170,6 +175,13 @@ public class IdeaServiceImp implements IdeaService {
         idea.setCategory(category);
         ideaRepository.save(idea);
 
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setContent("Someone has id " + req.getUserId()  + "post an idea to your department");
+        mailDTO.setFrom("noreply@gmail.com");
+        mailDTO.setTo(user.getEmail());
+        mailDTO.setSubject("User Post idea");
+        mailSender.sendMail(mailDTO);
+
         ListIdeaRes res = mapper.ideaToRes(idea);
         res.setTotalComment(0);
         res.setTotalLike(0);
@@ -226,7 +238,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setIdeaName(idea.getName());
         res.setDescription(idea.getDescription());
         res.setTotalLike(totalLike);
-        res.setTotalCommentg(totalComment);
+        res.setTotalComment(totalComment);
 
         return res;
     }
