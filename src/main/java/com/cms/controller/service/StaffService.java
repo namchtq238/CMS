@@ -17,6 +17,6 @@ public interface StaffService {
 
     boolean delete(Long id);
 
-    StaffReq update(Long id, StaffReq staffReq);
+    StaffRes update(Long id, StaffReq staffReq);
 
 }

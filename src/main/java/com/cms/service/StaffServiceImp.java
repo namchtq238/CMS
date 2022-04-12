@@ -38,16 +38,7 @@ public class StaffServiceImp implements StaffService {
     public List<StaffRes> getAllStaff() {
         List<Staff> staffList = staffRepo.getAll();
         return staffList.stream().map(staff -> {
-            StaffRes res = new StaffRes();
-            res.setStaffId(staff.getId());
-            res.setPosition(staff.getPosition());
-            res.setUserId(staff.getUser().getId());
-            res.setName(staff.getUser().getName());
-            res.setAddress(staff.getUser().getAddress());
-            res.setEmail(staff.getUser().getEmail());
-            res.setRole(staff.getUser().getRole());
-            res.setUsername(staff.getUser().getUserName());
-            return res;
+            return getStaffRes(staff);
         }).collect(Collectors.toList());
 
     }
@@ -67,17 +58,7 @@ public class StaffServiceImp implements StaffService {
         staff.setPosition(staffReq.getPosition());
         staff.setUser(user);
         staffRepo.save(staff);
-        StaffRes res = new StaffRes();
-        res.setStaffId(staff.getId());
-        res.setPosition(staff.getPosition());
-        res.setUserId(staff.getUser().getId());
-        res.setName(staff.getUser().getName());
-        res.setAddress(staff.getUser().getAddress());
-        res.setEmail(staff.getUser().getEmail());
-        res.setRole(staff.getUser().getRole());
-        res.setUsername(staff.getUser().getUserName());
-
-        return res;
+        return getStaffRes(staff);
     }
 
     @Override
@@ -85,6 +66,10 @@ public class StaffServiceImp implements StaffService {
         Optional<Staff> opt = staffRepo.findById(id);
         if (opt.isEmpty()) throw new RuntimeException("Not Found");
         Staff staff = opt.get();
+        return getStaffRes(staff);
+    }
+
+    private StaffRes getStaffRes(Staff staff) {
         StaffRes res = new StaffRes();
         res.setStaffId(staff.getId());
         res.setPosition(staff.getPosition());
@@ -109,7 +94,7 @@ public class StaffServiceImp implements StaffService {
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public StaffReq update(Long id, StaffReq staffReq) {
+    public StaffRes update(Long id, StaffReq staffReq) {
         Optional<Staff> opt = staffRepo.findById(id);
         if (opt.isEmpty()) throw new RuntimeException("Not Found");
         Staff staff = opt.get();
@@ -126,6 +111,7 @@ public class StaffServiceImp implements StaffService {
 
         userRepository.save(user);
         staffRepo.save(staff);
-        return staffReq;
+
+        return getStaffRes(staff);
     }
 }
