@@ -183,6 +183,7 @@ public class IdeaServiceImp implements IdeaService {
         ListIdeaRes res = mapper.ideaToRes(idea);
         res.setTotalComment(0);
         res.setTotalLike(0);
+        res.setUrl(fileOriginalUri);
 
 
         return res;

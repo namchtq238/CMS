@@ -1,39 +1,98 @@
 package com.cms.config.excel;
 
 import com.cms.controller.response.ListIdeaRes;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.*;
-import java.util.Arrays;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
-@Configuration
 public class ExcelConfig {
-    @Bean
-    public static ByteArrayInputStream ideasToCSV(List<ListIdeaRes> ideas) {
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
-            for (ListIdeaRes idea : ideas) {
-                List<String> data = Arrays.asList(
-                        String.valueOf(idea.getIdeaId()),
-                        idea.getTimeUp(),
-                        idea.getDescription(),
-                        String.valueOf(idea.getStaffId()),
-                        String.valueOf(idea.getDepartmentId()),
-                        String.valueOf(idea.getTotalLike()),
-                        String.valueOf(idea.getTotalComment())
-                );
-                csvPrinter.printRecord(data);
-            }
-            csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException("fail to import data to CSV file: " + e.getMessage());
+    private XSSFWorkbook workbook;
+    private XSSFSheet sheet;
+    private List<ListIdeaRes> listIdeaRes;
+
+    public ExcelConfig(List<ListIdeaRes> listIdeaRes) {
+        this.listIdeaRes = listIdeaRes;
+        workbook = new XSSFWorkbook();
+    }
+
+
+    private void writeHeaderLine() {
+        sheet = workbook.createSheet("Users");
+
+        Row row = sheet.createRow(0);
+
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(16);
+        style.setFont(font);
+
+        createCell(row, 0, "ID", style);
+        createCell(row, 1, "Name", style);
+        createCell(row, 2, "Description", style);
+        createCell(row, 3, "Staff Id", style);
+        createCell(row, 4, "Department Id", style);
+        createCell(row, 5, "Category Id",style);
+        createCell(row,6,"Total Like",style);
+        createCell(row, 7, "Total Comment", style);
+
+
+    }
+
+    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }else {
+            cell.setCellValue((String) value);
+        }
+        cell.setCellStyle(style);
+    }
+
+    private void writeDataLines() {
+        int rowCount = 1;
+
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(14);
+        style.setFont(font);
+
+        for (ListIdeaRes res : listIdeaRes) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+
+            createCell(row, columnCount++, res.getIdeaId(), style);
+            createCell(row, columnCount++, res.getName(), style);
+            createCell(row, columnCount++, res.getDescription(), style);
+            createCell(row, columnCount++, res.getStaffId(), style);
+            createCell(row, columnCount++, res.getDepartmentId(), style);
+            createCell(row, columnCount++, res.getCategoryId(), style);
+            createCell(row, columnCount++, res.getTotalLike(), style);
+            createCell(row, columnCount++, res.getTotalComment(), style);
         }
     }
+
+    public void export(HttpServletResponse response) throws IOException {
+        writeHeaderLine();
+        writeDataLines();
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        outputStream.close();
+
+    }
+
 }
