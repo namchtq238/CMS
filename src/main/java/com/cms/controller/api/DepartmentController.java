@@ -31,11 +31,11 @@ public class DepartmentController {
         }
     }
     @GetMapping("/detail")
-    public ResponseEntity<?> getDepartmentDetail(){
+    public ResponseEntity<?> getDepartmentDetail(@RequestParam(name = "departmentId") Long id){
         try{
-            return responseHelper.successResp(null,HttpStatus.OK);
+            return responseHelper.successResp(departmentService.getDepartmentDetail(id),HttpStatus.OK);
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(ex.getLocalizedMessage());
+            return responseHelper.infoResp(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

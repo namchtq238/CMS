@@ -1,7 +1,6 @@
 package com.cms.service;
 
 import com.cms.config.PaginationT;
-import com.cms.config.dto.UploadFileResDTO;
 import com.cms.config.storage.FileStorageService;
 import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
@@ -15,11 +14,8 @@ import com.cms.database.*;
 import com.cms.database.converter.IdeaConverter;
 import com.cms.entity.*;
 import com.cms.mapper.Mapper;
-import org.hibernate.engine.jdbc.StreamUtils;
-import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,16 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -226,7 +217,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setIdeaName(idea.getName());
         res.setDescription(idea.getDescription());
         res.setTotalLike(totalLike);
-        res.setTotalCommentg(totalComment);
+        res.setTotalComment(totalComment);
 
         return res;
     }
