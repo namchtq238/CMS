@@ -68,7 +68,7 @@ public class StaffServiceImp implements StaffService {
     @Override
     public StaffRes getStaff(Long id) {
         Optional<Staff> opt = staffRepo.findById(id);
-        if (opt.isEmpty())            throw new RuntimeException("Not Found");
+        if (opt.isEmpty()) throw new RuntimeException("Not Found");
         Staff staff = opt.get();
         StaffRes res = new StaffRes();
         res.setStaffId(staff.getId());
@@ -83,7 +83,6 @@ public class StaffServiceImp implements StaffService {
         Optional<Staff> opt = staffRepo.findById(id);
         if (opt.isEmpty()) throw new RuntimeException("Not Found");
         userRepository.delete(opt.get().getUser());
-        staffRepo.delete(opt.get());
         return true;
     }
 

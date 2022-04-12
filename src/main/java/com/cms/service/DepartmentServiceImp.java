@@ -45,8 +45,15 @@ public class DepartmentServiceImp implements DepartmentService {
 
     @Override
     public DepartmentResponse getDepartmentDetail(Long id) {
-        Optional<Departments> departments = departmentsRepo.findById(id);
-        return null;
+        Departments departments = departmentsRepo.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+        DepartmentResponse response = new DepartmentResponse();
+        response.setName(departments.getName());
+        response.setClouserDate(departments.getClosureDate().toString());
+        response.setQaName(departments.getQa().getUser().getName());
+        response.setClosureDateIdea(departments.getClosureDateIdea().toString());
+        response.setId(departments.getId());
+        response.setStartDate(departments.getStartDate().toString());
+        return response;
     }
 
 }
