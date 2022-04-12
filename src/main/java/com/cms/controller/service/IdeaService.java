@@ -14,5 +14,5 @@ public interface IdeaService {
 
     UploadFileResDTO uploadDocumentInScheduled(UploadReq req) throws IOException;
 
-    void downloadFile(DownloadReq req, HttpServletResponse response) throws Exception;
+    void downloadFile(DownloadReq req) throws Exception;
 }

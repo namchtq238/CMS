@@ -50,10 +50,10 @@ public class IdeaController {
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment; filename=download.zip");
             response.setStatus(HttpServletResponse.SC_OK);
-            if(req.getRole().equals(ERole.ADMIN.getTypeInStr())) ideaService.downloadFile(req, response);
-            return ResponseEntity.ok("ok");
+            if(req.getRole().equals(ERole.ADMIN.getTypeInStr())) ideaService.downloadFile(req);
+            return responseHelper.successResp("Success", HttpStatus.OK);
         }catch (Exception e){
-            throw new RuntimeException("Internal Error!" + e.getMessage());
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

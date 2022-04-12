@@ -35,7 +35,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.File;
+import java.io.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,34 +154,58 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public void downloadFile(DownloadReq req, HttpServletResponse response) throws Exception{
+    public void downloadFile(DownloadReq req) throws Exception{
         File file = ResourceUtils.getFile(uploadDir);
+        StringBuilder builder = new StringBuilder(file.toString());
         String[] files = file.list();
         List<String> filesConvert = Arrays.asList(files);
         List<Document> documents = documentRepo.findByNameIn(filesConvert);
-        List<String> listRes = new ArrayList<>();
+
+        List<String> listRes = documents.stream().map(Document::getName).collect(Collectors.toList());
         for(Document document : documents){
-            if(document.getCreatedDate().compareTo(Instant.parse(req.getStartDate()))>=0 &&document.getCreatedDate().compareTo(Instant.parse(req.getEndDate()))<=0)
-                listRes.add(document.getName());
+            if(document.getCreatedDate().compareTo(Instant.parse(req.getStartDate()))>=0
+                    && document.getCreatedDate().compareTo(Instant.parse(req.getEndDate()))<=0)
+                listRes.add(builder.append("\\").append(document.getName()).toString());
             System.err.println(document);
         }
-        System.out.println(listRes);
-        try (ZipOutputStream zippedOut = new ZipOutputStream(response.getOutputStream())) {
-            for (String fileRes : listRes) {
-                FileSystemResource resource = new FileSystemResource(fileRes);
+        zipFile(listRes, ResourceUtils.getFile(downloadDir));
+    }
+    public static void zipFile(List<String> path, File zipPath) throws IOException {
+        try {
+            FileOutputStream sos = new FileOutputStream(zipPath);
+            ZipOutputStream zos = new ZipOutputStream(sos)
+            ;
+            List<String> filesToBeZipped = path.stream().distinct().collect(Collectors.toList());
 
-                ZipEntry e = new ZipEntry(resource.getFilename());
-                // Configure the zip entry, the properties of the file
-                e.setSize(resource.contentLength());
-                e.setTime(System.currentTimeMillis());
-                // etc.
-                zippedOut.putNextEntry(e);
-                StreamUtils.copy(resource.getInputStream(), zippedOut);
-                zippedOut.closeEntry();
+            FileInputStream fis;
+            for (String filePath : filesToBeZipped) {
+                File fileToBeZipped = new File(filePath);
+
+                if (!fileToBeZipped.exists() || fileToBeZipped.isDirectory()) {
+                    zos.close();
+                    sos.close();
+                    throw new FileNotFoundException("Could not fould file path");
+                }
+                fis = new FileInputStream(fileToBeZipped);
+
+                ZipEntry zipEntry = new ZipEntry(fileToBeZipped.getName());
+                long now = System.currentTimeMillis();
+                zipEntry.setTime(now);
+
+                zos.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[8192];
+
+                while (fis.read(bytes) >= 0) {
+                    zos.write(bytes, 0, bytes.length);
+                }
+                zos.closeEntry();
+                fis.close();
             }
-            zippedOut.finish();
-        } catch (Exception e) {
-            e.getMessage();
+            zos.close();
+            sos.close();
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         }
     }
 }
