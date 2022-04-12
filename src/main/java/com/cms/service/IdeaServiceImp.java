@@ -70,6 +70,9 @@ public class IdeaServiceImp implements IdeaService {
     Mapper mapper;
 
     @Autowired
+    QaRepo qaRepo;
+
+    @Autowired
     LikeRepo likeRepo;
 
     @Value("${file.upload-dir}")
@@ -125,6 +128,8 @@ public class IdeaServiceImp implements IdeaService {
         return false;
     }
 
+
+    //Không đánh index vì -> giảm hiệu năng save
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public ListIdeaRes uploadDocumentInScheduled(UploadReq req){
@@ -166,10 +171,12 @@ public class IdeaServiceImp implements IdeaService {
         idea.setCategory(category);
         ideaRepository.save(idea);
 
+        //send mail
         MailDTO mailDTO = new MailDTO();
-        mailDTO.setContent("Someone has id " + req.getUserId()  + "post an idea to your department");
+        QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
+        mailDTO.setContent("Someone has name " + user.getName()  + "post an idea to your department");
         mailDTO.setFrom("noreply@gmail.com");
-        mailDTO.setTo(user.getEmail());
+        mailDTO.setTo(qa.getUser().getEmail());
         mailDTO.setSubject("User Post idea");
         mailSender.sendMail(mailDTO);
 

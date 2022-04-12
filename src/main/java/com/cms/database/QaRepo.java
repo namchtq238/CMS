@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QaRepo extends JpaRepository<QA, Long> {
+    QA getByDepartmentsId(Long departmentId);
 }
