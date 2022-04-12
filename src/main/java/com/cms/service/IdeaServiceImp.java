@@ -7,15 +7,14 @@ import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
+import com.cms.controller.response.IdeaDetailRes;
 import com.cms.controller.response.ListIdeaRes;
 import com.cms.controller.service.ExportService;
 import com.cms.controller.service.IdeaService;
 import com.cms.database.*;
 import com.cms.database.converter.IdeaConverter;
-import com.cms.entity.Category;
-import com.cms.entity.Document;
-import com.cms.entity.Idea;
-import com.cms.entity.User;
+import com.cms.entity.*;
+import com.cms.mapper.Mapper;
 import org.hibernate.engine.jdbc.StreamUtils;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.*;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +70,12 @@ public class IdeaServiceImp implements IdeaService {
     @Autowired
     CommentRepo commentRepo;
 
+    @Autowired
+    Mapper mapper;
+
+    @Autowired
+    LikeRepo likeRepo;
+
     @Value("${file.upload-dir}")
     String uploadDir;
 
@@ -91,7 +97,7 @@ public class IdeaServiceImp implements IdeaService {
             res.setDescription(converter.getDescription());
             res.setCategoryId(converter.getCategoryId());
             res.setTimeUp(converter.getTimeUp());
-            res.setTotalLike(ideaRepository.countLikeForDetailIdea(converter.getId()));
+            res.setTotalLike(likeRepo.countLikesByIdeaId(converter.getId()));
             res.setTotalComment(commentRepo.countCommentForDetailIdea(converter.getId()));
             res.setStaffId(converter.getStaffId());
             res.setIdeaId(converter.getId());
@@ -124,7 +130,7 @@ public class IdeaServiceImp implements IdeaService {
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public UploadFileResDTO uploadDocumentInScheduled(UploadReq req){
+    public ListIdeaRes uploadDocumentInScheduled(UploadReq req){
         Optional<User> userOpt = userRepo.findById(req.getUserId());
         if(userOpt.isEmpty())
             throw new RuntimeException("Not Found");
@@ -136,16 +142,10 @@ public class IdeaServiceImp implements IdeaService {
         String fileName = fileStorageService.storeFile(req.getFile());
 
         // build uri to download
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download-file/")
-                .path(fileName)
-                .toUriString();
+        String fileDownloadUri = Paths.get(uploadDir).toString() + "\\" + fileName;
 
         //build uri to contact
-        String fileOriginalUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/")
-                .path(fileName)
-                .toUriString();
+        String fileOriginalUri = Paths.get(uploadDir).toString() + "\\" + fileName;
         Document document = new Document();
         document.setUrl(fileOriginalUri);
         document.setName(fileName);
@@ -169,8 +169,12 @@ public class IdeaServiceImp implements IdeaService {
         idea.setCategory(category);
         ideaRepository.save(idea);
 
-        UploadFileResDTO dto = new UploadFileResDTO(fileName, fileDownloadUri, fileOriginalUri, req.getFile().getContentType(), req.getFile().getSize());
-        return dto;
+        ListIdeaRes res = mapper.ideaToRes(idea);
+        res.setTotalComment(0);
+        res.setTotalLike(0);
+
+
+        return res;
     }
 
     @Override
@@ -196,6 +200,19 @@ public class IdeaServiceImp implements IdeaService {
         List<ListIdeaRes> listRes = findIdea(departmentId, sortBy, 0, 1000).getItems().stream().collect(Collectors.toList());
         InputStreamResource resource = new InputStreamResource(export.ideasToCsv(listRes));
         return resource;
+    }
+
+    @Override
+    public IdeaDetailRes getDetailRes(Long ideaId, Integer page, Integer size) {
+        Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
+        Pageable pageable = PageRequest.of(page, size);
+        if(ideaOpt.isEmpty()) return null;
+        Idea idea = ideaOpt.get();
+        Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
+        IdeaDetailRes res = new IdeaDetailRes();
+        res.setIdeaId(idea.getId());
+        res.setDetailLike();
+        return null;
     }
 
     public static void zipFile(List<String> path, File zipPath) throws IOException {

@@ -31,9 +31,4 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "GROUP BY idea.id", nativeQuery = true)
     Page<IdeaConverter> findByCategoryId(Long departmentId, Pageable pageable);
 
-    @Query(value = "select count(like_detail.id) from like_detail where like_detail.idea_id = ?1", nativeQuery = true)
-    Integer countLikeForDetailIdea(Long ideaId);
-//
-//    @Query(value = "", nativeQuery = true)
-//    IdeaDetailConverter getIdeaDetail();
 }

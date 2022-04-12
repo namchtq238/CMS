@@ -27,8 +27,6 @@ public class ListIdeaRes {
 
     Integer totalComment;
 
-    Integer status;
-
     Long categoryId;
 
     String name;

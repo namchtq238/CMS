@@ -15,6 +15,8 @@ public class Comment {
 
     private String content;
 
+    private Instant createdDate;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idea_id", referencedColumnName = "id")
     private Idea idea;

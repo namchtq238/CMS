@@ -10,6 +10,7 @@ import com.cms.database.StaffRepo;
 import com.cms.entity.Comment;
 import com.cms.entity.Idea;
 import com.cms.entity.Staff;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,7 @@ public class CommentServiceImp implements CommentService {
         comment.setAnonymous(commentReq.isAnonymous());
         comment.setIdea(idea);
         comment.setStaff(staffComment);
+        comment.setCreatedDate(Instant.now());
         commentRepo.save(comment);
         MailDTO mailDTO = new MailDTO();
         mailDTO.setContent("User " + staffComment.getUser().getUserName() + "commented in your idea");
