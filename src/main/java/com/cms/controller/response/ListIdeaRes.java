@@ -24,4 +24,6 @@ public class ListIdeaRes {
     Long categoryId;
 
     String name;
+
+    String url;
 }
