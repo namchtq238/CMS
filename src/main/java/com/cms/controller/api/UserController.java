@@ -52,7 +52,7 @@ public class UserController {
         return responseHelper.successResp(new LoginResponse(jwt,
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles), HttpStatus.OK);
+                roles, userDetails.getUser().getId()), HttpStatus.OK);
         }
         catch (Exception exception){
             return ResponseEntity.internalServerError().body(String.format("Code Error: %s ", exception.getLocalizedMessage()));

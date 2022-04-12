@@ -42,6 +42,10 @@ public class StaffServiceImp implements StaffService {
             res.setStaffId(staff.getId());
             res.setPosition(staff.getPosition());
             res.setUserId(staff.getUser().getId());
+            res.setName(staff.getUser().getName());
+            res.setAddress(staff.getUser().getAddress());
+            res.setEmail(staff.getUser().getEmail());
+            res.setRole(staff.getUser().getRole());
             return res;
         }).collect(Collectors.toList());
 
@@ -74,6 +78,10 @@ public class StaffServiceImp implements StaffService {
         res.setStaffId(staff.getId());
         res.setPosition(staff.getPosition());
         res.setUserId(staff.getUser().getId());
+        res.setName(staff.getUser().getName());
+        res.setAddress(staff.getUser().getAddress());
+        res.setEmail(staff.getUser().getEmail());
+        res.setRole(staff.getUser().getRole());
         return res;
     }
 
@@ -99,7 +107,7 @@ public class StaffServiceImp implements StaffService {
         user.setName(staffReq.getName());
         user.setEmail(staffReq.getEmail());
         user.setRole(staffReq.getRole());
-        user.setUserName(staffReq.getUsername());
+        if(!staffReq.getPassword().isBlank()) user.setUserName(staffReq.getUsername());
         user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
         user.setAddress(staffReq.getAddress());
         userRepository.save(user);
