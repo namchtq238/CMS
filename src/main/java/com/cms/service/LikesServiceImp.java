@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 
 @Service
 public class LikesServiceImp implements LikesService {
@@ -20,19 +21,19 @@ public class LikesServiceImp implements LikesService {
     public Integer changeStatusLike(ChangeStatusReq req) {
         Likes likeObj = likeRepo.findByStaffIdAndIdeaId(req.getStaffId(), req.getIdeaId());
         Integer newStatus = req.getStatus();
-        if (LikeStatus.INACTIVE.getValue() == req.getStatus()) {
+        if (Objects.equals(LikeStatus.INACTIVE.getValue(), req.getStatus())) {
             newStatus = LikeStatus.LIKE.getValue();
             likeObj.setIsLike(newStatus);
             likeRepo.save(likeObj);
         }
 
-        if (LikeStatus.LIKE.getValue() == req.getStatus()) {
+        if (Objects.equals(LikeStatus.LIKE.getValue(), req.getStatus())) {
             newStatus = LikeStatus.DISLIKE.getValue();
             likeObj.setIsLike(newStatus);
             likeRepo.save(likeObj);
         }
 
-        if (LikeStatus.DISLIKE.getValue() == req.getStatus()) {
+        if (Objects.equals(LikeStatus.DISLIKE.getValue(), req.getStatus())) {
             newStatus = LikeStatus.INACTIVE.getValue();
             likeObj.setIsLike(newStatus);
             likeRepo.save(likeObj);
