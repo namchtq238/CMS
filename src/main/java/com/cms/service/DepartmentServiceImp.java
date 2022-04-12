@@ -1,6 +1,7 @@
 package com.cms.service;
 
 import com.cms.config.PaginationT;
+import com.cms.controller.request.DepartmentReq;
 import com.cms.controller.response.DepartmentResponse;
 import com.cms.controller.service.DepartmentService;
 import com.cms.database.DepartmentsRepo;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,38 @@ public class DepartmentServiceImp implements DepartmentService {
         response.setClosureDateIdea(departments.getClosureDateIdea().toString());
         response.setId(departments.getId());
         response.setStartDate(departments.getStartDate().toString());
+        return response;
+    }
+
+    @Override
+    public DepartmentResponse addDepartment(DepartmentReq departmentReq) {
+        Departments departments = new Departments();
+        departments.setName(departmentReq.getName());
+        departments.setStartDate(Instant.parse(departmentReq.getStartDate()));
+        departments.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
+        departments.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
+        departmentsRepo.save(departments);
+        DepartmentResponse response = new DepartmentResponse();
+        response.setStartDate(departmentReq.getStartDate());
+        response.setClosureDateIdea(departmentReq.getClosureDateIdea());
+        response.setClouserDate(departmentReq.getClosureDate());
+        response.setName(departmentReq.getName());
+        return response;
+    }
+
+    @Override
+    public DepartmentResponse update(Long id, DepartmentReq departmentReq) {
+        Departments departments = departmentsRepo.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+        departments.setName(departmentReq.getName());
+        departments.setStartDate(Instant.parse(departmentReq.getStartDate()));
+        departments.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
+        departments.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
+        departmentsRepo.save(departments);
+        DepartmentResponse response = new DepartmentResponse();
+        response.setStartDate(departmentReq.getStartDate());
+        response.setClosureDateIdea(departmentReq.getClosureDateIdea());
+        response.setClouserDate(departmentReq.getClosureDate());
+        response.setName(departmentReq.getName());
         return response;
     }
 

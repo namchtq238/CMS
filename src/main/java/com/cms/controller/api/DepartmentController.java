@@ -1,14 +1,12 @@
 package com.cms.controller.api;
 
 import com.cms.config.dto.ResponseHelper;
+import com.cms.controller.request.DepartmentReq;
 import com.cms.controller.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -36,6 +34,24 @@ public class DepartmentController {
             return responseHelper.successResp(departmentService.getDepartmentDetail(id),HttpStatus.OK);
         }catch (Exception ex){
             return responseHelper.infoResp(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("")
+    public ResponseEntity<?> addNewDepartment(@RequestBody DepartmentReq departmentReq){
+        try {
+            return responseHelper.successResp(departmentService.addDepartment(departmentReq), HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.NO_CONTENT);
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody DepartmentReq departmentReq, @PathVariable Long id){
+        try {
+            return responseHelper.successResp(departmentService.update(id, departmentReq), HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
 }
