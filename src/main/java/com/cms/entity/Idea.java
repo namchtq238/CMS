@@ -30,6 +30,8 @@ public class Idea {
 
     private Instant createdDate;
 
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;

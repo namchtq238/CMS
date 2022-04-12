@@ -27,13 +27,14 @@ public class IdeaController {
     ResponseHelper responseHelper;
 
     @GetMapping("")
-    public ResponseEntity<?> getListIdea(@RequestParam(name = "departmentId", required = false) Long id,
+    public ResponseEntity<?> getListIdea(@RequestParam(name = "sortBy") String sortBy,
+                                         @RequestParam(name = "departmentId", required = false) Long id,
                                          @RequestParam(name = "page", defaultValue = "0") Integer page,
                                          @RequestParam(name = "size", defaultValue = "5") Integer size){
         try{
-            return responseHelper.successResp(ideaService.findIdea(id,page,size), HttpStatus.OK);
+            return responseHelper.successResp(ideaService.findIdea(id,sortBy,page,size), HttpStatus.OK);
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(String.format("We have something wrong with %s",ex.getCause()));
+            return ResponseEntity.internalServerError().body(String.format("We have something wrong with %s",ex.getMessage()));
         }
     }
 
@@ -61,10 +62,11 @@ public class IdeaController {
     }
 
     @GetMapping("/export-all")
-    public ResponseEntity<?> exportAllIdea(@RequestParam(name = "departmentId") Long id){
+    public ResponseEntity<?> exportAllIdea(@RequestParam(name = "departmentId") Long id,
+                                           @RequestParam(name = "sortBy") String sortBy){
         try{
             String filename = "data_idea_" + Instant.now();
-            InputStreamResource file = ideaService.exportAllListIdeaInCsv(id);
+            InputStreamResource file = ideaService.exportAllListIdeaInCsv(id, sortBy);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.parseMediaType("application/csv"))

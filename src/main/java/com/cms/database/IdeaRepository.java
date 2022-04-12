@@ -16,21 +16,23 @@ import java.util.Optional;
 public interface IdeaRepository extends JpaRepository<Idea, Long> {
     Optional<Idea> findById(Long id);
 
-    @Query(value = "SELECT i.id as id, " +
-            "i.time_up as timeUp," +
-            "i.description as description, " +
-            "i.staff_id as staffId, " +
-            "i.category_id as category, " +
-            "count(l.id) as totalLike, " +
-            "count(m.id) as totalComment " +
-            "FROM idea as i " +
-            "LEFT JOIN likes as l on i.id = l.idea_id " +
-            "LEFT JOIN comment as m on i.id = m.idea_id " +
-            "LEFT JOIN departments as d on i.department_id = d.id " +
+    @Query(value = "SELECT idea.id AS id, " +
+            "idea.time_up AS timeUp, " +
+            "idea.description AS description, " +
+            "idea.staff_id AS staffId, " +
+            "idea.category_id AS categoryId, " +
+            "idea.department_id AS departmentId, " +
+            "idea.NAME AS ideaName " +
+            "FROM `idea` " +
+            "LEFT JOIN `departments` " +
+            "ON `idea`.department_id = `departments`.id " +
             "WHERE 1 = 1 " +
-            "AND d.id = ? " +
-            "GROUP BY i.id ", nativeQuery = true)
+            "AND departments.id = ?1 " +
+            "GROUP BY idea.id", nativeQuery = true)
     Page<IdeaConverter> findByCategoryId(Long departmentId, Pageable pageable);
+
+    @Query(value = "select count(like_detail.id) from like_detail where like_detail.idea_id = ?1", nativeQuery = true)
+    Integer countLikeForDetailIdea(Long ideaId);
 //
 //    @Query(value = "", nativeQuery = true)
 //    IdeaDetailConverter getIdeaDetail();

@@ -10,10 +10,7 @@ import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.ListIdeaRes;
 import com.cms.controller.service.ExportService;
 import com.cms.controller.service.IdeaService;
-import com.cms.database.CategoryRepo;
-import com.cms.database.DocumentRepo;
-import com.cms.database.IdeaRepository;
-import com.cms.database.UserRepository;
+import com.cms.database.*;
 import com.cms.database.converter.IdeaConverter;
 import com.cms.entity.Category;
 import com.cms.entity.Document;
@@ -70,32 +67,51 @@ public class IdeaServiceImp implements IdeaService {
     @Autowired
     CategoryRepo categoryRepo;
 
+    @Autowired
+    CommentRepo commentRepo;
+
     @Value("${file.upload-dir}")
     String uploadDir;
 
     @Value("${file.download-dir}")
     String downloadDir;
 
+    //nhớ đánh index
     @Override
-    public PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size) {
+    public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception{
         PaginationT<ListIdeaRes> list = new PaginationT<>();
         Sort sort = Sort.by("id").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<IdeaConverter> data = ideaRepository.findByCategoryId(depaId, pageable);
-        list.setItems(data.stream().map(converter -> {
+        List<ListIdeaRes> listIdeaRes = data.stream().map(converter -> {
             ListIdeaRes res = new ListIdeaRes();
             if (converter == null) return null;
 
-            res.setDepartmentId(converter.getCategory());
+            res.setDepartmentId(converter.getDepartmentId());
             res.setDescription(converter.getDescription());
+            res.setCategoryId(converter.getCategoryId());
             res.setTimeUp(converter.getTimeUp());
-            res.setTotalLike(converter.getTotalLike());
-            res.setTotalComment(converter.getTotalComment());
+            res.setTotalLike(ideaRepository.countLikeForDetailIdea(converter.getId()));
+            res.setTotalComment(commentRepo.countCommentForDetailIdea(converter.getId()));
             res.setStaffId(converter.getStaffId());
             res.setIdeaId(converter.getId());
+            res.setName(converter.getIdeaName());
 
             return res;
-        }).collect(Collectors.toList()));
+        }).collect(Collectors.toList());
+        List<ListIdeaRes> response;
+        switch (sortBy){
+            case "LIKE":
+                response = listIdeaRes.stream().sorted((a,b) -> b.getTotalLike().compareTo(a.getTotalLike())).collect(Collectors.toList());
+                break;
+            case "COMMENT":
+                response = listIdeaRes.stream().sorted((a,b) -> b.getTotalComment().compareTo(a.getTotalComment())).collect(Collectors.toList());
+                break;
+            default:
+                response = listIdeaRes;
+        }
+
+        list.setItems(response);
         list.setTotal(data.getTotalElements());
         return list;
     }
@@ -143,6 +159,7 @@ public class IdeaServiceImp implements IdeaService {
         Idea idea = new Idea();
         idea.setDescription(req.getDescription());
         idea.setDocument(document);
+        idea.setName(req.getName());
         idea.setStartDate(Instant.parse(req.getStartDate()));
         idea.setTimeUp(Instant.parse(req.getEndDate()));
         idea.setCreatedDate(Instant.now());
@@ -175,8 +192,8 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public InputStreamResource exportAllListIdeaInCsv(Long departmentId) {
-        List<ListIdeaRes> listRes = findIdea(departmentId, 0, 1000).getItems().stream().collect(Collectors.toList());
+    public InputStreamResource exportAllListIdeaInCsv(Long departmentId, String sortBy) throws Exception{
+        List<ListIdeaRes> listRes = findIdea(departmentId, sortBy, 0, 1000).getItems().stream().collect(Collectors.toList());
         InputStreamResource resource = new InputStreamResource(export.ideasToCsv(listRes));
         return resource;
     }

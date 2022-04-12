@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface IdeaService {
-    PaginationT<ListIdeaRes> findIdea(Long depaId, Integer page, Integer size);
+    PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception;
 
     UploadFileResDTO uploadDocumentInScheduled(UploadReq req) throws IOException;
 
     void downloadFile(DownloadReq req) throws Exception;
 
-    InputStreamResource exportAllListIdeaInCsv(Long departmentId);
+    InputStreamResource exportAllListIdeaInCsv(Long departmentId, String sortBy) throws Exception;
 }

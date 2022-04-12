@@ -16,9 +16,9 @@ public interface IdeaConverter {
 
     Long getStaffId();
 
-     Long getCategory();
+     Long getCategoryId();
 
-    Integer getTotalLike();
+     Long getDepartmentId();
 
-    Integer getTotalComment();
+     String getIdeaName();
 }

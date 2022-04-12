@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@Table(name = "like_detail")
 public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
