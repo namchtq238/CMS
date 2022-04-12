@@ -32,13 +32,19 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public CategoryReq addCategory(CategoryReq categoryReq) {
+    public CategoryRes addCategory(CategoryReq categoryReq) {
         Category category = new Category();
         category.setActive(categoryReq.isActive());
         category.setCreatedDate(Instant.now());
         category.setDescription(categoryReq.getName());
-        categoryRepo.save(category);
-        return categoryReq;
+        category = categoryRepo.save(category);
+        categoryRepo.flush();
+        CategoryRes res = new CategoryRes();
+        res.setName(categoryReq.getName());
+        res.setCreatedDate(category.getCreatedDate().toString());
+        res.setActive(categoryReq.isActive());
+        res.setId(category.getId());
+        return res;
     }
 
     @Override

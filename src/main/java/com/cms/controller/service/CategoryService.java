@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CategoryService {
     List<CategoryRes> categoryList();
-    CategoryReq addCategory(CategoryReq categoryReq);
+    CategoryRes addCategory(CategoryReq categoryReq);
     CategoryRes getACategory(Long id);
     CategoryRes putACategory(Long id, CategoryReq categoryReq);
     boolean delete(Long id);
