@@ -86,6 +86,7 @@ public class IdeaServiceImp implements IdeaService {
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception{
         PaginationT<ListIdeaRes> list = new PaginationT<>();
+
         Sort sort = Sort.by("id").descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<IdeaConverter> data = ideaRepository.findByCategoryId(depaId, pageable);
@@ -209,10 +210,25 @@ public class IdeaServiceImp implements IdeaService {
         if(ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
+        Integer totalLike = likeRepo.countLikesByIdeaId(ideaId);
+        //sap xep theo ngay cmt moi nhat
+        Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
+        List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
+
+        PaginationT<String> listCommentContent = new PaginationT<>();
+        listCommentContent.setTotal(commentList.getTotalElements());
+        listCommentContent.setItems(commentContents.stream().map(Comment::getContent).collect(Collectors.toList()));
+
         IdeaDetailRes res = new IdeaDetailRes();
+
         res.setIdeaId(idea.getId());
-        res.setDetailLike();
-        return null;
+        res.setDetailComment(listCommentContent);
+        res.setIdeaName(idea.getName());
+        res.setDescription(idea.getDescription());
+        res.setTotalLike(totalLike);
+        res.setTotalCommentg(totalComment);
+
+        return res;
     }
 
     public static void zipFile(List<String> path, File zipPath) throws IOException {
