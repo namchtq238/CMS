@@ -48,7 +48,7 @@ public class StaffController {
         try {
             return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
         } catch (Exception e) {
-            return responseHelper.infoResp(e.getMessage(), HttpStatus.NO_CONTENT);
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @DeleteMapping("/{id}")

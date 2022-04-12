@@ -13,4 +13,5 @@ public class StaffRes {
     String address;
     Integer role;
     String email;
+    String username;
 }

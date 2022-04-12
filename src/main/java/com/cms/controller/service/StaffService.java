@@ -11,7 +11,7 @@ public interface StaffService {
 
     List<StaffRes> getAllStaff();
 
-    StaffReq createNewStaff(StaffReq staffReq);
+    StaffRes createNewStaff(StaffReq staffReq);
 
     StaffRes getStaff(Long id);
 

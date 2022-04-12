@@ -46,6 +46,7 @@ public class StaffServiceImp implements StaffService {
             res.setAddress(staff.getUser().getAddress());
             res.setEmail(staff.getUser().getEmail());
             res.setRole(staff.getUser().getRole());
+            res.setUsername(staff.getUser().getUserName());
             return res;
         }).collect(Collectors.toList());
 
@@ -53,7 +54,7 @@ public class StaffServiceImp implements StaffService {
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public StaffReq createNewStaff(StaffReq staffReq) {
+    public StaffRes createNewStaff(StaffReq staffReq) {
         User user = new User();
         Staff staff = new Staff();
         user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
@@ -66,7 +67,17 @@ public class StaffServiceImp implements StaffService {
         staff.setPosition(staffReq.getPosition());
         staff.setUser(user);
         staffRepo.save(staff);
-        return staffReq;
+        StaffRes res = new StaffRes();
+        res.setStaffId(staff.getId());
+        res.setPosition(staff.getPosition());
+        res.setUserId(staff.getUser().getId());
+        res.setName(staff.getUser().getName());
+        res.setAddress(staff.getUser().getAddress());
+        res.setEmail(staff.getUser().getEmail());
+        res.setRole(staff.getUser().getRole());
+        res.setUsername(staff.getUser().getUserName());
+
+        return res;
     }
 
     @Override
@@ -82,6 +93,8 @@ public class StaffServiceImp implements StaffService {
         res.setAddress(staff.getUser().getAddress());
         res.setEmail(staff.getUser().getEmail());
         res.setRole(staff.getUser().getRole());
+        res.setUsername(staff.getUser().getUserName());
+
         return res;
     }
 
@@ -110,6 +123,7 @@ public class StaffServiceImp implements StaffService {
         if(!staffReq.getPassword().isBlank()) user.setUserName(staffReq.getUsername());
         user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
         user.setAddress(staffReq.getAddress());
+
         userRepository.save(user);
         staffRepo.save(staff);
         return staffReq;
