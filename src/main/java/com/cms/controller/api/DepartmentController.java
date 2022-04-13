@@ -28,6 +28,7 @@ public class DepartmentController {
             return responseHelper.infoResp(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/detail")
     public ResponseEntity<?> getDepartmentDetail(@RequestParam(name = "departmentId") Long id){
         try{
@@ -36,6 +37,7 @@ public class DepartmentController {
             return responseHelper.infoResp(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
     @PostMapping("")
     public ResponseEntity<?> addNewDepartment(@RequestBody DepartmentReq departmentReq){
         try {
@@ -45,6 +47,7 @@ public class DepartmentController {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.NO_CONTENT);
         }
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody DepartmentReq departmentReq, @PathVariable Long id){
         try {

@@ -102,6 +102,7 @@ public class IdeaServiceImp implements IdeaService {
             res.setStaffId(converter.getStaffId());
             res.setIdeaId(converter.getId());
             res.setName(converter.getIdeaName());
+            res.setUrl(converter.getUrl());
 
             return res;
         }).collect(Collectors.toList());
@@ -130,6 +131,7 @@ public class IdeaServiceImp implements IdeaService {
 
 
     //Không đánh index vì -> giảm hiệu năng save
+    //Optimze code từ chạy 7s -> 3s
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public ListIdeaRes uploadDocumentInScheduled(UploadReq req){
@@ -238,6 +240,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setDescription(idea.getDescription());
         res.setTotalLike(totalLike);
         res.setTotalComment(totalComment);
+        res.setUrl(idea.getDocument().getUrl());
 
         return res;
     }

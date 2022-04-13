@@ -15,4 +15,5 @@ public class IdeaDetailRes {
     Integer totalComment;
     String description;
     String ideaName;
+    String url;
 }

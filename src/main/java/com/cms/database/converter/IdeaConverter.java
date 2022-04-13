@@ -21,4 +21,6 @@ public interface IdeaConverter {
      Long getDepartmentId();
 
      String getIdeaName();
+
+     String getUrl();
 }

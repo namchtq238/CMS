@@ -22,9 +22,11 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "idea.staff_id AS staffId, " +
             "idea.category_id AS categoryId, " +
             "idea.department_id AS departmentId, " +
-            "idea.NAME AS ideaName " +
+            "idea.NAME AS ideaName, " +
+            "document.url AS url " +
             "FROM `idea` " +
             "LEFT JOIN `departments` " +
+            "LEFT JOIN `document` on `idea`.document_id = `document`.id " +
             "ON `idea`.department_id = `departments`.id " +
             "WHERE 1 = 1 " +
             "AND departments.id = ?1 " +
