@@ -23,4 +23,6 @@ public interface IdeaConverter {
      String getIdeaName();
 
      String getUrl();
+
+     Integer getLikeStatus();
 }

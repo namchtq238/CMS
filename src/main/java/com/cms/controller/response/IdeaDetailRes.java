@@ -12,6 +12,7 @@ public class IdeaDetailRes {
     Long ideaId;
     PaginationT<String> detailComment;
     Integer totalLike;
+    Integer totalDislike;
     Integer totalComment;
     String description;
     String ideaName;

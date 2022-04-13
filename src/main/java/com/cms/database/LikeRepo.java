@@ -2,6 +2,7 @@ package com.cms.database;
 
 import com.cms.entity.Likes;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,5 +11,6 @@ import java.util.List;
 public interface LikeRepo extends JpaRepository<Likes, Long> {
     Likes findByStaffIdAndIdeaId(Long staffId, Long ideaId);
     Integer countLikesByIdeaId(Long ideaId);
+    Integer countLikesByIsLikeAndIdeaId(Integer isLike, Long ideaId);
     List<Likes> findByIdeaId(Long ideaId);
 }

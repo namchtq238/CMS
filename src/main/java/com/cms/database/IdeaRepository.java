@@ -23,11 +23,13 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "idea.category_id AS categoryId, " +
             "idea.department_id AS departmentId, " +
             "idea.NAME AS ideaName, " +
-            "document.url AS url " +
+            "document.url AS url, " +
+            "detail_like.is_like as likeStatus " +
             "FROM `idea` " +
             "LEFT JOIN `departments` " +
-            "LEFT JOIN `document` on `idea`.document_id = `document`.id " +
             "ON `idea`.department_id = `departments`.id " +
+            "LEFT JOIN `document` on `idea`.document_id = `document`.id " +
+            "LEFT JOIN `detail_like` on `idea`.id = `detail_like`.idea_id " +
             "WHERE 1 = 1 " +
             "AND departments.id = ?1 " +
             "GROUP BY idea.id", nativeQuery = true)

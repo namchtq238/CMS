@@ -6,6 +6,7 @@ import com.cms.config.dto.UploadFileResDTO;
 import com.cms.config.storage.FileStorageService;
 import com.cms.config.storage.GoogleStorageInterface;
 import com.cms.constants.ERole;
+import com.cms.constants.LikeStatus;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
 import com.cms.controller.response.IdeaDetailRes;
@@ -97,12 +98,14 @@ public class IdeaServiceImp implements IdeaService {
             res.setDescription(converter.getDescription());
             res.setCategoryId(converter.getCategoryId());
             res.setTimeUp(converter.getTimeUp());
-            res.setTotalLike(likeRepo.countLikesByIdeaId(converter.getId()));
+            res.setTotalLike(likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), converter.getId()));
             res.setTotalComment(commentRepo.countCommentForDetailIdea(converter.getId()));
             res.setStaffId(converter.getStaffId());
             res.setIdeaId(converter.getId());
             res.setName(converter.getIdeaName());
             res.setUrl(converter.getUrl());
+            res.setLikeStatus(converter.getLikeStatus());
+
 
             return res;
         }).collect(Collectors.toList());
@@ -223,7 +226,8 @@ public class IdeaServiceImp implements IdeaService {
         if(ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
-        Integer totalLike = likeRepo.countLikesByIdeaId(ideaId);
+        Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(),ideaId);
+        Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
         //sap xep theo ngay cmt moi nhat
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
@@ -241,6 +245,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalLike(totalLike);
         res.setTotalComment(totalComment);
         res.setUrl(idea.getDocument().getUrl());
+        res.setTotalDislike(totalDislike);
 
         return res;
     }

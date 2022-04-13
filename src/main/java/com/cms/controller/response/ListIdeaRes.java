@@ -26,4 +26,6 @@ public class ListIdeaRes {
     String name;
 
     String url;
+
+    Integer likeStatus;
 }
