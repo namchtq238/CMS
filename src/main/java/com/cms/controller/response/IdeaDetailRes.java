@@ -17,5 +17,4 @@ public class IdeaDetailRes {
     String description;
     String ideaName;
     String url;
-    Integer likeStatus;
 }
