@@ -57,15 +57,15 @@ public class CommentServiceImp implements CommentService {
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
         comment.setIdea(idea);
-        comment.setStaff(staffComment);
+        comment.setStaff(null);
         comment.setCreatedDate(Instant.now());
         commentRepo.save(comment);
-        MailDTO mailDTO = new MailDTO();
-        mailDTO.setContent("User " + staffComment.getUser().getUserName() + "commented in your idea");
-        mailDTO.setFrom("noreply@gmail.com");
-        mailDTO.setTo(staffIdea.getUser().getEmail());
-        mailDTO.setSubject("User comment");
-        mailSender.sendMail(mailDTO);
+//        MailDTO mailDTO = new MailDTO();
+//        mailDTO.setContent("User " + staffComment.getUser().getUserName() + "commented in your idea");
+//        mailDTO.setFrom("noreply@gmail.com");
+//        mailDTO.setTo(staffIdea.getUser().getEmail());
+//        mailDTO.setSubject("User comment");
+//        mailSender.sendMail(mailDTO);
         ideaRepository.save(idea);
         return commentReq;
     }
