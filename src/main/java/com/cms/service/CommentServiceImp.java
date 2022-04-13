@@ -50,22 +50,22 @@ public class CommentServiceImp implements CommentService {
     @Transactional
     public CommentReq postComment(CommentReq commentReq) {
         Comment comment = new Comment();
-        Idea idea = ideaRepository.getById(commentReq.getIdeaId());
+        Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
         idea.setLastComment(Instant.now());
         Staff staffIdea = idea.getStaff();
-        Staff staffComment = staffRepo.getById(commentReq.getStaffId());
+        Staff staffComment = staffRepo.findById(commentReq.getStaffId()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
         comment.setIdea(idea);
-        comment.setStaff(null);
+        comment.setStaff(staffComment);
         comment.setCreatedDate(Instant.now());
         commentRepo.save(comment);
-//        MailDTO mailDTO = new MailDTO();
-//        mailDTO.setContent("User " + staffComment.getUser().getUserName() + "commented in your idea");
-//        mailDTO.setFrom("noreply@gmail.com");
-//        mailDTO.setTo(staffIdea.getUser().getEmail());
-//        mailDTO.setSubject("User comment");
-//        mailSender.sendMail(mailDTO);
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setContent("User " + staffComment.getUser().getUserName() + "commented in your idea");
+        mailDTO.setFrom("gogitek.wibu.love.anal@gmail.com");
+        mailDTO.setTo(staffIdea.getUser().getEmail());
+        mailDTO.setSubject("User comment");
+        mailSender.sendMail(mailDTO);
         ideaRepository.save(idea);
         return commentReq;
     }
