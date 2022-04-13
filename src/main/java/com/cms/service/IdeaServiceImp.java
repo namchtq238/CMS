@@ -247,6 +247,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalComment(totalComment);
         res.setUrl(idea.getDocument().getUrl());
         res.setTotalDislike(totalDislike);
+        res.setLikeStatus(idea.getLike().get(0).getIsLike());
 
         return res;
     }
