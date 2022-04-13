@@ -171,19 +171,20 @@ public class IdeaServiceImp implements IdeaService {
         idea.setTimeUp(Instant.parse(req.getEndDate()));
         idea.setCreatedDate(Instant.now());
         idea.setDepartmentId(req.getDepartmentId());
+        idea.setStaff(userOpt.get().getStaff());
         Category category = new Category();
         category.setId(req.getCategoryId());
         idea.setCategory(category);
-        ideaRepository.save(idea);
+        idea = ideaRepository.save(idea);
 
         //send mail
-        MailDTO mailDTO = new MailDTO();
-        QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
-        mailDTO.setContent("Someone has name " + user.getName()  + "post an idea to your department");
-        mailDTO.setFrom("noreply@gmail.com");
-        mailDTO.setTo(qa.getUser().getEmail());
-        mailDTO.setSubject("User Post idea");
-        mailSender.sendMail(mailDTO);
+//        MailDTO mailDTO = new MailDTO();
+//        QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
+//        mailDTO.setContent("Someone has name " + user.getName()  + "post an idea to your department");
+//        mailDTO.setFrom("noreply@gmail.com");
+//        mailDTO.setTo(qa.getUser().getEmail());
+//        mailDTO.setSubject("User Post idea");
+//        mailSender.sendMail(mailDTO);
 
         ListIdeaRes res = mapper.ideaToRes(idea);
         res.setTotalComment(0);
