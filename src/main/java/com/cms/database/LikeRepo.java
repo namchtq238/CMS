@@ -11,6 +11,7 @@ import java.util.List;
 public interface LikeRepo extends JpaRepository<Likes, Long> {
     Likes findByStaffIdAndIdeaId(Long staffId, Long ideaId);
     Integer countLikesByIdeaId(Long ideaId);
+    @Query(value = "select count(id) from like_detail where is_like = ?1 and idea_id = ?2", nativeQuery = true)
     Integer countLikesByIsLikeAndIdeaId(Integer isLike, Long ideaId);
-    List<Likes> findByIdeaId(Long ideaId);
+//    List<Likes> findByIdeaId(Long ideaId);
 }
