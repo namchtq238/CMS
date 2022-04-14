@@ -14,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/ideas")
@@ -55,14 +57,18 @@ public class IdeaController {
         }
     }
 
-    @PostMapping("/download-zip")
-    public ResponseEntity<?> downloadAllFile(HttpServletResponse response, @RequestBody DownloadReq req) {
+    @GetMapping(value = "/download-zip")
+    public ResponseEntity<?> downloadAllFile(DownloadReq req) {
         try {
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment; filename=download.zip");
-            response.setStatus(HttpServletResponse.SC_OK);
-            if (req.getRole().equals(ERole.ADMIN.getTypeInStr())) ideaService.downloadFile(req);
-            return responseHelper.successResp("Success", HttpStatus.OK);
+            req.setRole(ERole.QA.getTypeInStr());
+            if (req.getRole().equals(ERole.ADMIN.getTypeInStr()) || req.getRole().equals(ERole.QA.getTypeInStr())) {
+                InputStreamResource streamResource = new InputStreamResource(ideaService.downloadFile(req));
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=resource.zip")
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(streamResource);
+            }
+            return responseHelper.successResp("Failed", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

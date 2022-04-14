@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Paths;
@@ -84,7 +85,7 @@ public class IdeaServiceImp implements IdeaService {
 
     //nhớ đánh index
     @Override
-    public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception{
+    public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception {
         PaginationT<ListIdeaRes> list = new PaginationT<>();
 
         Sort sort = Sort.by("id").descending();
@@ -110,12 +111,12 @@ public class IdeaServiceImp implements IdeaService {
             return res;
         }).collect(Collectors.toList());
         List<ListIdeaRes> response;
-        switch (sortBy){
+        switch (sortBy) {
             case "LIKE":
-                response = listIdeaRes.stream().sorted((a,b) -> b.getTotalLike().compareTo(a.getTotalLike())).collect(Collectors.toList());
+                response = listIdeaRes.stream().sorted((a, b) -> b.getTotalLike().compareTo(a.getTotalLike())).collect(Collectors.toList());
                 break;
             case "COMMENT":
-                response = listIdeaRes.stream().sorted((a,b) -> b.getTotalComment().compareTo(a.getTotalComment())).collect(Collectors.toList());
+                response = listIdeaRes.stream().sorted((a, b) -> b.getTotalComment().compareTo(a.getTotalComment())).collect(Collectors.toList());
                 break;
             default:
                 response = listIdeaRes;
@@ -128,7 +129,7 @@ public class IdeaServiceImp implements IdeaService {
 
     public boolean checkClosureTime(String startDate, String endDate) {
         Instant time = Instant.now();
-        if(time.compareTo(Instant.parse(startDate)) >= 0 && time.compareTo(Instant.parse(endDate))<= 0) return true;
+        if (time.compareTo(Instant.parse(startDate)) >= 0 && time.compareTo(Instant.parse(endDate)) <= 0) return true;
         return false;
     }
 
@@ -137,14 +138,14 @@ public class IdeaServiceImp implements IdeaService {
     //Optimze code từ chạy 7s -> 3s
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public ListIdeaRes uploadDocumentInScheduled(UploadReq req){
+    public ListIdeaRes uploadDocumentInScheduled(UploadReq req) {
         Optional<User> userOpt = userRepo.findById(req.getUserId());
-        if(userOpt.isEmpty())
+        if (userOpt.isEmpty())
             throw new RuntimeException("Not Found");
         User user = userOpt.get();
-        if(!user.getRole().equals(ERole.STAFF.getValue()))
+        if (!user.getRole().equals(ERole.STAFF.getValue()))
             throw new RuntimeException(String.format("Author is not %s", ERole.STAFF));
-        if(!checkClosureTime(req.getStartDate(), req.getEndDate()))
+        if (!checkClosureTime(req.getStartDate(), req.getEndDate()))
             throw new RuntimeException(String.format("Out of time to submit: %s", new RuntimeException().getLocalizedMessage()));
         String fileName = fileStorageService.storeFile(req.getFile());
 
@@ -180,7 +181,7 @@ public class IdeaServiceImp implements IdeaService {
 //        send mail
         MailDTO mailDTO = new MailDTO();
         QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
-        mailDTO.setContent("Someone has name " + user.getName()  + "post an idea to your department");
+        mailDTO.setContent("Someone has name " + user.getName() + "post an idea to your department");
         mailDTO.setFrom("noreply@gmail.com");
         mailDTO.setTo(qa.getUser().getEmail());
         mailDTO.setSubject("User Post idea");
@@ -196,7 +197,7 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public void downloadFile(DownloadReq req) throws Exception{
+    public ByteArrayInputStream downloadFile(DownloadReq req) throws Exception {
         File file = ResourceUtils.getFile(uploadDir);
         StringBuilder builder = new StringBuilder(file.toString());
         String[] files = file.list();
@@ -204,17 +205,17 @@ public class IdeaServiceImp implements IdeaService {
         List<Document> documents = documentRepo.findByNameIn(filesConvert);
 
         List<String> listRes = documents.stream().map(Document::getName).collect(Collectors.toList());
-        for(Document document : documents){
-            if(document.getCreatedDate().compareTo(Instant.parse(req.getStartDate()))>=0
-                    && document.getCreatedDate().compareTo(Instant.parse(req.getEndDate()))<=0)
+        for (Document document : documents) {
+            if (document.getCreatedDate().compareTo(Instant.parse(req.getStartDate())) >= 0
+                    && document.getCreatedDate().compareTo(Instant.parse(req.getEndDate())) <= 0)
                 listRes.add(builder.append("\\").append(document.getName()).toString());
             System.err.println(document);
         }
-        zipFile(listRes, ResourceUtils.getFile(downloadDir));
+        return zipFile(listRes);
     }
 
     @Override
-    public InputStreamResource exportAllListIdeaInCsv(Long departmentId, String sortBy) throws Exception{
+    public InputStreamResource exportAllListIdeaInCsv(Long departmentId, String sortBy) throws Exception {
         List<ListIdeaRes> listRes = findIdea(departmentId, sortBy, 0, 1000).getItems().stream().collect(Collectors.toList());
         InputStreamResource resource = new InputStreamResource(export.ideasToCsv(listRes));
         return resource;
@@ -224,10 +225,10 @@ public class IdeaServiceImp implements IdeaService {
     public IdeaDetailRes getDetailRes(Long ideaId, Integer page, Integer size) {
         Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
         Pageable pageable = PageRequest.of(page, size);
-        if(ideaOpt.isEmpty()) return null;
+        if (ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
-        Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(),ideaId);
+        Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
         Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
         //sap xep theo ngay cmt moi nhat
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
@@ -251,11 +252,10 @@ public class IdeaServiceImp implements IdeaService {
         return res;
     }
 
-    public static void zipFile(List<String> path, File zipPath) throws IOException {
+    public static ByteArrayInputStream zipFile(List<String> path) throws IOException {
         try {
-            FileOutputStream sos = new FileOutputStream(zipPath);
-            ZipOutputStream zos = new ZipOutputStream(sos)
-            ;
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(out);
             List<String> filesToBeZipped = path.stream().distinct().collect(Collectors.toList());
 
             FileInputStream fis;
@@ -264,7 +264,7 @@ public class IdeaServiceImp implements IdeaService {
 
                 if (!fileToBeZipped.exists() || fileToBeZipped.isDirectory()) {
                     zos.close();
-                    sos.close();
+                    out.close();
                     throw new FileNotFoundException("Could not fould file path");
                 }
                 fis = new FileInputStream(fileToBeZipped);
@@ -284,7 +284,8 @@ public class IdeaServiceImp implements IdeaService {
                 fis.close();
             }
             zos.close();
-            sos.close();
+            out.close();
+            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
