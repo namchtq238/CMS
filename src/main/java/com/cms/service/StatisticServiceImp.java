@@ -43,14 +43,15 @@ public class StatisticServiceImp implements StatisticService {
         int totalDepartments = (int) departments.stream().filter(department ->
                 department.getStartDate().isAfter(processTime)).count();
         List<Idea> ideas = ideaRepository.findAll();
-        int totalIdeas = (int) ideas.stream().filter(idea -> idea.getCreatedDate().isAfter(processTime)).count();
+
+        int totalIdeas = ideas.size() == 0 ? 0 : (int) ideas.stream().filter(idea -> idea.getCreatedDate() != null && idea.getCreatedDate().isAfter(processTime)).count();
 
         List<Likes> likes = likeRepo.findAll();
-        int totalLikes = (int) likes.stream().filter(like -> like.getCreatedAt().isAfter(processTime)
-                || like.getCreatedAt().isAfter(processTime)).count();
+        int totalLikes = likes.size() == 0 ? 0: (int) likes.stream().filter(like -> like.getCreatedAt() != null && (like.getCreatedAt().isAfter(processTime)
+                || like.getCreatedAt().isAfter(processTime))).count();
 
         List<Comment> comments = commentRepo.findAll();
-        int totalComments = (int) comments.stream().filter(comment -> comment.getCreatedDate().isAfter(processTime)).count();
+        int totalComments = (int) comments.stream().filter(comment -> comment.getCreatedDate() != null && comment.getCreatedDate().isAfter(processTime)).count();
         List<Integer> likeListInIdea = new ArrayList<>();
         for(Idea element : ideas){
             Integer listLikeInIdea = likeRepo.countLikesByIdeaId(element.getId());
