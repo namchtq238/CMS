@@ -46,7 +46,12 @@ public class StaffController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStaff(@PathVariable Long id, @RequestBody StaffReq staffReq){
         try {
-            return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
+            if(staffReq.getRole()==1){
+                return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
+            }
+            else {
+                return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
+            }
         } catch (Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

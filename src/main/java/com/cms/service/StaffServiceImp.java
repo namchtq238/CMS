@@ -4,8 +4,10 @@ import com.cms.controller.request.StaffReq;
 import com.cms.controller.response.StaffRes;
 import com.cms.controller.service.StaffService;
 import com.cms.controller.service.UserService;
+import com.cms.database.QaRepo;
 import com.cms.database.StaffRepo;
 import com.cms.database.UserRepository;
+import com.cms.entity.QA;
 import com.cms.entity.Staff;
 import com.cms.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class StaffServiceImp implements StaffService {
     PasswordEncoder passwordEncoder;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    QaRepo qaRepo;
 
     @Override
     public Staff getCurrentStaff() {
@@ -96,19 +100,29 @@ public class StaffServiceImp implements StaffService {
         Optional<Staff> opt = staffRepo.findById(id);
         if (opt.isEmpty()) throw new RuntimeException("Not Found");
         Staff staff = opt.get();
-        staff.setPosition(staff.getPosition());
+
         Optional<User> optionalUser = userRepository.findById(staff.getUser().getId());
         if (optionalUser.isEmpty()) throw new RuntimeException("Not Found");
         User user = optionalUser.get();
         user.setName(staffReq.getName());
         user.setEmail(staffReq.getEmail());
         user.setRole(staffReq.getRole());
-        if(!staffReq.getPassword().isBlank()) user.setUserName(staffReq.getUsername());
-        user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
+        user.setUserName(staffReq.getUsername());
+        if(!staffReq.getPassword().isBlank())  {
+            user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
+        }
         user.setAddress(staffReq.getAddress());
-
+        staff.setPosition(staff.getPosition());
+        if (staffReq.getRole()==1){
+            staffRepo.save(staff);
+        }
+        else{
+            QA qa = new QA();
+            qa.setUser(user);
+            staffRepo.delete(staff);
+            qaRepo.save(qa);
+        }
         userRepository.save(user);
-        staffRepo.save(staff);
 
         return getStaffRes(staff);
     }
