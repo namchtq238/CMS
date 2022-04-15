@@ -37,7 +37,7 @@ public class DepartmentServiceImp implements DepartmentService {
             res.setName(converter.getName());
             res.setQaName(converter.getQaName());
             res.setStartDate(converter.getStartDate());
-            res.setClouserDate(converter.getClosureDate());
+            res.setClosureDate(converter.getClosureDate());
             res.setClosureDateIdea(converter.getClosureDateIdea());
             return res;
         }).collect(Collectors.toList()));
@@ -49,11 +49,11 @@ public class DepartmentServiceImp implements DepartmentService {
         Departments departments = departmentsRepo.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
         DepartmentResponse response = new DepartmentResponse();
         response.setName(departments.getName());
-        response.setClouserDate(departments.getClosureDate().toString());
+        response.setClosureDate(departments.getClosureDate());
         response.setQaName(departments.getQa().getUser().getName());
-        response.setClosureDateIdea(departments.getClosureDateIdea().toString());
+        response.setClosureDateIdea(departments.getClosureDateIdea());
         response.setId(departments.getId());
-        response.setStartDate(departments.getStartDate().toString());
+        response.setStartDate(departments.getStartDate());
         return response;
     }
 
@@ -66,9 +66,9 @@ public class DepartmentServiceImp implements DepartmentService {
         departments.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
         departmentsRepo.save(departments);
         DepartmentResponse response = new DepartmentResponse();
-        response.setStartDate(departmentReq.getStartDate());
-        response.setClosureDateIdea(departmentReq.getClosureDateIdea());
-        response.setClouserDate(departmentReq.getClosureDate());
+        response.setStartDate(Instant.parse(departmentReq.getStartDate()));
+        response.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
+        response.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
         response.setName(departmentReq.getName());
         return response;
     }
@@ -76,15 +76,16 @@ public class DepartmentServiceImp implements DepartmentService {
     @Override
     public DepartmentResponse update(Long id, DepartmentReq departmentReq) {
         Departments departments = departmentsRepo.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+
         departments.setName(departmentReq.getName());
         departments.setStartDate(Instant.parse(departmentReq.getStartDate()));
         departments.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
         departments.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
         departmentsRepo.save(departments);
         DepartmentResponse response = new DepartmentResponse();
-        response.setStartDate(departmentReq.getStartDate());
-        response.setClosureDateIdea(departmentReq.getClosureDateIdea());
-        response.setClouserDate(departmentReq.getClosureDate());
+        response.setStartDate(Instant.parse(departmentReq.getStartDate()));
+        response.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
+        response.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
         response.setName(departmentReq.getName());
         return response;
     }

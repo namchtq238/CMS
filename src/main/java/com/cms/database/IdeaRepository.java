@@ -14,7 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface IdeaRepository extends JpaRepository<Idea, Long> {
-    Optional<Idea> findById(Long id);
+    @Query(value = "select * from idea where id = ?1 and staff_id = ?2", nativeQuery = true)
+    Optional<Idea> findByIdeaIdAndStaffId(Long id, Long staffId);
 
     @Query(value = "SELECT idea.id AS id, " +
             "idea.time_up AS timeUp, " +

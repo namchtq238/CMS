@@ -115,10 +115,11 @@ public class IdeaController {
 
     @GetMapping("/detail")
     public ResponseEntity<?> getDetailIdea(@RequestParam(name = "ideaId") Long id,
+                                           @RequestParam(name = "staffId") Long staffId,
                                            @RequestParam(name = "page", defaultValue = "0") Integer page,
                                            @RequestParam(name = "size", defaultValue = "5") Integer size) {
         try {
-            return responseHelper.successResp(ideaService.getDetailRes(id, page, size),HttpStatus.OK);
+            return responseHelper.successResp(ideaService.getDetailRes(id, staffId, page, size),HttpStatus.OK);
         } catch (Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

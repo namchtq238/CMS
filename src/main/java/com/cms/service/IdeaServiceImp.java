@@ -222,14 +222,16 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public IdeaDetailRes getDetailRes(Long ideaId, Integer page, Integer size) {
-        Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
+    public IdeaDetailRes getDetailRes(Long ideaId, Long staffId, Integer page, Integer size) {
+        Optional<Idea> ideaOpt = ideaRepository.findByIdeaIdAndStaffId(ideaId, staffId);
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
+
         Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
         Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
+        Integer statusLike = likeRepo.findLikeStatusByIdeaIdAndStaffId(ideaId, staffId);
         //sap xep theo ngay cmt moi nhat
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
@@ -248,6 +250,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalComment(totalComment);
         res.setUrl(idea.getDocument().getUrl());
         res.setTotalDislike(totalDislike);
+        res.setLikeStatus(statusLike);
 
         return res;
     }

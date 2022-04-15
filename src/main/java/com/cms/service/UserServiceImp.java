@@ -8,7 +8,9 @@ import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserReq;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
+import com.cms.database.StaffRepo;
 import com.cms.database.UserRepository;
+import com.cms.entity.Staff;
 import com.cms.entity.User;
 import lombok.SneakyThrows;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
@@ -35,6 +37,9 @@ public class UserServiceImp implements UserService {
     UserRepository userRepo;
 
     @Autowired
+    StaffRepo staffRepo;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Override
@@ -48,7 +53,11 @@ public class UserServiceImp implements UserService {
             user.setUserName(req.getUsername());
             user.setPassword(passwordEncoder.encode(req.getPassword()));
             user.setRole(ERole.STAFF.getValue());
+
             userRepo.save(user);
+            Staff staff = new Staff();
+            staff.setUser(user);
+            staffRepo.save(staff);
         } catch (Exception e) {
             throw new MessageDescriptorFormatException(e.getMessage());
         }

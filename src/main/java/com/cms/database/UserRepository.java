@@ -2,6 +2,7 @@ package com.cms.database;
 
 import com.cms.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,4 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long id);
 
     boolean existsByUserName(String username);
+
+    @Query(value = "select staff.id from users left join staff on users.id = staff.user_id where staff.user_id = ?1", nativeQuery = true)
+    Long findStaffIdByUserId(Long userId);
 }

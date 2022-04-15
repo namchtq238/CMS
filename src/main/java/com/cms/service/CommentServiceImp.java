@@ -7,9 +7,11 @@ import com.cms.controller.service.CommentService;
 import com.cms.database.CommentRepo;
 import com.cms.database.IdeaRepository;
 import com.cms.database.StaffRepo;
+import com.cms.database.UserRepository;
 import com.cms.entity.Comment;
 import com.cms.entity.Idea;
 import com.cms.entity.Staff;
+import com.cms.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ public class CommentServiceImp implements CommentService {
     IdeaRepository ideaRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     StaffRepo staffRepo;
 
     @Override
@@ -50,10 +55,13 @@ public class CommentServiceImp implements CommentService {
     @Transactional
     public CommentReq postComment(CommentReq commentReq) {
         Comment comment = new Comment();
+
         Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+        Long staffId = userRepository.findStaffIdByUserId(commentReq.getStaffId()); // cái này là tìm ra staffId từ userId, nhưng vì đã gắn vào request rồi nên ko để tên, mọi người chú ý
+        System.err.println(staffId);
         idea.setLastComment(Instant.now());
         Staff staffIdea = idea.getStaff();
-        Staff staffComment = staffRepo.findById(commentReq.getStaffId()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+        Staff staffComment = staffRepo.findById(staffId).orElseThrow(() -> new RuntimeException("NOT FOUND"));
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
         comment.setIdea(idea);
