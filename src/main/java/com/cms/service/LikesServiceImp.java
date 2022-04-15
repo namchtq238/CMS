@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -31,7 +32,7 @@ public class LikesServiceImp implements LikesService {
         try {
             Optional<Likes> likes = likeRepo.findByStaffIdAndIdeaId(req.getStaffId(), req.getIdeaId());
             if (likes.isEmpty()) {
-                likeRepo.saveLikeByStaffIdAndIdeaId(userRepo.findStaffIdByUserId(req.getStaffId()), req.getIdeaId());
+                likeRepo.saveLikeByStaffIdAndIdeaId(userRepo.findStaffIdByUserId(req.getStaffId()), req.getIdeaId(), Instant.now());
                 return 1;
             } else {
                 Likes likeObj = likes.get();
@@ -41,18 +42,21 @@ public class LikesServiceImp implements LikesService {
                 if (LikeStatus.INACTIVE.getValue().equals(req.getStatus())) {
                     newStatus = LikeStatus.LIKE.getValue();
                     likeObj.setIsLike(newStatus);
+                    likeObj.setUpdatedAt(Instant.now());
                     likeRepo.save(likeObj);
                 }
 
                 if (LikeStatus.LIKE.getValue().equals(req.getStatus())) {
                     newStatus = LikeStatus.DISLIKE.getValue();
                     likeObj.setIsLike(newStatus);
+                    likeObj.setUpdatedAt(Instant.now());
                     likeRepo.save(likeObj);
                 }
 
                 if (LikeStatus.DISLIKE.getValue().equals(req.getStatus())) {
                     newStatus = LikeStatus.INACTIVE.getValue();
                     likeObj.setIsLike(newStatus);
+                    likeObj.setUpdatedAt(Instant.now());
                     likeRepo.save(likeObj);
                 }
                 return newStatus;

@@ -3,7 +3,6 @@ package com.cms.controller.api;
 import com.cms.config.dto.ResponseHelper;
 import com.cms.config.jwt.JwtUtils;
 import com.cms.config.jwt.UserDetailsImpl;
-import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserRegisterReq;
@@ -11,23 +10,15 @@ import com.cms.controller.request.UserReq;
 import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
-import com.cms.entity.User;
-import org.apache.logging.log4j.message.StringFormattedMessage;
-import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")

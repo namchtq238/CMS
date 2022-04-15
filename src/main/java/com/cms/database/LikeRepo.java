@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,6 @@ public interface LikeRepo extends JpaRepository<Likes, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "insert into like_detail(idea_id, staff_id, is_like) values(?1, ?2, 1) ", nativeQuery = true)
-    void saveLikeByStaffIdAndIdeaId(Long staffId, Long ideaId);
+    @Query(value = "insert into like_detail(idea_id, staff_id, is_like, created_date) values(?1, ?2, 1, ?3) ", nativeQuery = true)
+    void saveLikeByStaffIdAndIdeaId(Long staffId, Long ideaId, Instant now);
 }

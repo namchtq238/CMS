@@ -37,9 +37,7 @@ public class StaffServiceImp implements StaffService {
     @Override
     public List<StaffRes> getAllStaff() {
         List<Staff> staffList = staffRepo.getAll();
-        return staffList.stream().map(staff -> {
-            return getStaffRes(staff);
-        }).collect(Collectors.toList());
+        return staffList.stream().map(this::getStaffRes).collect(Collectors.toList());
 
     }
 

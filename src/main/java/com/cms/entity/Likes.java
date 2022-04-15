@@ -4,8 +4,10 @@ import com.cms.constants.LikeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -17,6 +19,10 @@ public class Likes {
     private Long id;
 
     private Integer isLike;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
