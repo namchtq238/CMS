@@ -10,18 +10,18 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DepartmentsRepo extends JpaRepository<Departments, Long> {
-    @Query(value = "select d.id as id, " +
-            "d.name as name, " +
-            "d.start_date as startDate," +
-            "d.closure_date_idea as closureDateIdea," +
-            "d.closure_date as closureDate, " +
+    @Query(value = "select departments.id as id, " +
+            "departments.name as name, " +
+            "departments.start_date as startDate," +
+            "departments.closure_date_idea as closureDateIdea," +
+            "departments.closure_date as closureDate, " +
             "users.name as qaName  " +
-            "from departments as d " +
-            "left join qa on d.id = qa.department_id " +
+            "from departments d " +
+            "left join qa on departments.id = qa.department_id " +
             "left join users on qa.user_id = users.id " +
             "where 1 = 1 " +
-            "AND(?1 is null or d.id like %?1% " +
-            "OR d.name like %?1% " +
+            "AND(?1 is null or departments.id like %?1% " +
+            "OR departments.name like %?1% " +
             "OR users.name like %?1%)", nativeQuery = true)
     Page<DepartmentConverter> getListDepartments(String keyWord, Pageable pageable);
 
