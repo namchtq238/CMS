@@ -64,7 +64,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserReq user){
         try{
-            userService.registerUser(user)
+            userService.registerUser(user);
             return responseHelper.successResp("success", HttpStatus.OK);
         }
         catch (RuntimeException ex){
