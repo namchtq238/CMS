@@ -24,5 +24,5 @@ public interface IdeaService {
 
     InputStreamResource exportAllListIdeaInCsv(Long departmentId, String sortBy) throws Exception;
 
-    IdeaDetailRes getDetailRes(Long ideaId, Long staffid, Integer page, Integer size);
+    IdeaDetailRes getDetailRes(Long ideaId, Long userId, Integer page, Integer size);
 }

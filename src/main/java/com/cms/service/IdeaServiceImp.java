@@ -222,7 +222,8 @@ public class IdeaServiceImp implements IdeaService {
     }
 
     @Override
-    public IdeaDetailRes getDetailRes(Long ideaId, Long staffId, Integer page, Integer size) {
+    public IdeaDetailRes getDetailRes(Long ideaId, Long userId, Integer page, Integer size) {
+        Long staffId = userRepo.findStaffIdByUserId(userId);
         Optional<Idea> ideaOpt = ideaRepository.findByIdeaIdAndStaffId(ideaId, staffId);
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
