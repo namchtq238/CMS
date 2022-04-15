@@ -224,7 +224,7 @@ public class IdeaServiceImp implements IdeaService {
     @Override
     public IdeaDetailRes getDetailRes(Long ideaId, Long userId, Integer page, Integer size) {
         Long staffId = userRepo.findStaffIdByUserId(userId);
-        Optional<Idea> ideaOpt = ideaRepository.findByIdeaIdAndStaffId(ideaId, staffId);
+        Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
@@ -251,6 +251,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalComment(totalComment);
         res.setUrl(idea.getDocument().getUrl());
         res.setTotalDislike(totalDislike);
+        if(statusLike == null) res.setLikeStatus(1);
         res.setLikeStatus(statusLike);
 
         return res;
