@@ -4,6 +4,7 @@ import com.cms.config.PaginationT;
 import com.cms.controller.request.DepartmentReq;
 import com.cms.controller.response.DepartmentResponse;
 import com.cms.controller.service.DepartmentService;
+import com.cms.controller.service.UserService;
 import com.cms.database.DepartmentsRepo;
 import com.cms.database.converter.DepartmentConverter;
 import com.cms.entity.Departments;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 public class DepartmentServiceImp implements DepartmentService {
     @Autowired
     DepartmentsRepo departmentsRepo;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public PaginationT<DepartmentResponse> getListDepartment(String keyWord, Integer page, Integer size) {
@@ -62,6 +66,7 @@ public class DepartmentServiceImp implements DepartmentService {
         Departments departments = new Departments();
         departments.setName(departmentReq.getName());
         departments.setStartDate(Instant.parse(departmentReq.getStartDate()));
+        departments.setQa(userService.getCurrentUser().getQa());
         departments.setClosureDate(Instant.parse(departmentReq.getClosureDate()));
         departments.setClosureDateIdea(Instant.parse(departmentReq.getClosureDateIdea()));
         departmentsRepo.save(departments);

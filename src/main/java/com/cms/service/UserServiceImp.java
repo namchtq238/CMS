@@ -1,13 +1,10 @@
 package com.cms.service;
 
 import com.cms.config.jwt.UserDetailsImpl;
-import com.cms.config.jwt.JwtUtils;
 import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserRegisterReq;
-import com.cms.controller.request.UserReq;
-import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
 import com.cms.database.StaffRepo;
@@ -18,12 +15,15 @@ import lombok.SneakyThrows;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -42,12 +42,16 @@ public class UserServiceImp implements UserService {
     StaffRepo staffRepo;
 
     @Autowired
+    PlatformTransactionManager transactionManager;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Override
     @SneakyThrows
-    @Transactional(rollbackOn = Exception.class)
     public void registerUser(@Valid UserRegisterReq req) throws RuntimeException {
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {
             User user = new User();
             if (userRepo.existsByUserName(req.getUsername()))
@@ -63,8 +67,10 @@ public class UserServiceImp implements UserService {
             staff.setUser(user);
 
             staffRepo.save(staff);
+            transactionManager.commit(transaction);
         } catch (Exception e) {
-            throw new MessageDescriptorFormatException(e.getMessage());
+            transactionManager.rollback(transaction);
+            throw new MessageDescriptorFormatException("Register fail");
         }
     }
 
