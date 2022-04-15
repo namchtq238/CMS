@@ -9,7 +9,7 @@ import com.cms.entity.User;
 import org.springframework.stereotype.Service;
 
 public interface UserService {
-    User registerUser(UserReq req);
+    void registerUser(UserReq req);
 
     UserInfoRes updateUserInfo(UserInfoReq req);
 

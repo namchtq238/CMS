@@ -46,7 +46,7 @@ public class UserServiceImp implements UserService {
     @Override
     @SneakyThrows
     @Transactional(rollbackOn = Exception.class)
-    public User registerUser(@Valid UserReq req) throws RuntimeException {
+    public void registerUser(@Valid UserReq req) throws RuntimeException {
         try {
             User user = new User();
             if (userRepo.existsByUserName(req.getUsername()))
@@ -56,10 +56,11 @@ public class UserServiceImp implements UserService {
             user.setRole(ERole.STAFF.getValue());
 
             userRepo.save(user);
+
             Staff staff = new Staff();
             staff.setUser(user);
+
             staffRepo.save(staff);
-            return user;
         } catch (Exception e) {
             throw new MessageDescriptorFormatException(e.getMessage());
         }

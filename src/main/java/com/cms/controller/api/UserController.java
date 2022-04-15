@@ -64,14 +64,8 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserReq user){
         try{
-            User userRes = userService.registerUser(user);
-            Authentication authentication = authenticate.authenticate(
-                    new UsernamePasswordAuthenticationToken(userRes.getUserName(), userRes.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
-
-            return responseHelper.successResp(new LoginResponse(jwt,userRes.getUserName(),
-                    userRes.getEmail(), ERole.valueOfType(userRes.getRole()).getTypeInStr(), userRes.getId()), HttpStatus.OK);
+            userService.registerUser(user)
+            return responseHelper.successResp("success", HttpStatus.OK);
         }
         catch (RuntimeException ex){
             return ResponseEntity.internalServerError().body(ex.getMessage());
