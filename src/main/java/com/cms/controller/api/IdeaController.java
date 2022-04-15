@@ -4,7 +4,7 @@ import com.cms.config.dto.ResponseHelper;
 import com.cms.constants.ERole;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
-import com.cms.controller.service.FileHandleService;
+import com.cms.service.FileHandleService;
 import com.cms.controller.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -14,14 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/ideas")

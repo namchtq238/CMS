@@ -1,4 +1,4 @@
-package com.cms.controller.service;
+package com.cms.service;
 
 import com.cms.config.storage.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;

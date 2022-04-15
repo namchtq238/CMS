@@ -1,5 +1,7 @@
 package com.cms.controller.service;
 
-public interface StatisticService {
+import com.cms.controller.response.StatisticResponse;
 
+public interface StatisticService {
+    StatisticResponse getListStatistic();
 }

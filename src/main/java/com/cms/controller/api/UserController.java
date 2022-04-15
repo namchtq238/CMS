@@ -6,6 +6,7 @@ import com.cms.config.jwt.UserDetailsImpl;
 import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
+import com.cms.controller.request.UserRegisterReq;
 import com.cms.controller.request.UserReq;
 import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
@@ -62,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserReq user){
+    public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserRegisterReq user){
         try{
             userService.registerUser(user);
             return responseHelper.successResp("success", HttpStatus.OK);

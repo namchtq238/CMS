@@ -5,6 +5,7 @@ import com.cms.config.jwt.JwtUtils;
 import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
+import com.cms.controller.request.UserRegisterReq;
 import com.cms.controller.request.UserReq;
 import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
@@ -46,13 +47,14 @@ public class UserServiceImp implements UserService {
     @Override
     @SneakyThrows
     @Transactional(rollbackOn = Exception.class)
-    public void registerUser(@Valid UserReq req) throws RuntimeException {
+    public void registerUser(@Valid UserRegisterReq req) throws RuntimeException {
         try {
             User user = new User();
             if (userRepo.existsByUserName(req.getUsername()))
                 throw new MessageDescriptorFormatException(String.format("Email %s already existed", req.getUsername()));
             user.setUserName(req.getUsername());
             user.setPassword(passwordEncoder.encode(req.getPassword()));
+            user.setEmail(req.getEmail());
             user.setRole(ERole.STAFF.getValue());
 
             userRepo.save(user);
