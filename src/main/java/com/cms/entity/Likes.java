@@ -1,6 +1,7 @@
 package com.cms.entity;
 
 import com.cms.constants.LikeStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +25,4 @@ public class Likes {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idea_id", referencedColumnName = "id")
     private Idea idea;
-
 }

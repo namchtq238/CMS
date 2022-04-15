@@ -3,12 +3,14 @@ package com.cms.controller.api;
 import com.cms.config.dto.ResponseHelper;
 import com.cms.config.jwt.JwtUtils;
 import com.cms.config.jwt.UserDetailsImpl;
+import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserReq;
 import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
+import com.cms.entity.User;
 import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +64,14 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createNewAccount(@Validated @RequestBody UserReq user){
         try{
-            userService.registerUser(user);
-            return responseHelper.successResp("Success",HttpStatus.OK);
+            User userRes = userService.registerUser(user);
+            Authentication authentication = authenticate.authenticate(
+                    new UsernamePasswordAuthenticationToken(userRes.getUserName(), userRes.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            return responseHelper.successResp(new LoginResponse(jwt,userRes.getUserName(),
+                    userRes.getEmail(), ERole.valueOfType(userRes.getRole()).getTypeInStr(), userRes.getId()), HttpStatus.OK);
         }
         catch (RuntimeException ex){
             return ResponseEntity.internalServerError().body(ex.getMessage());

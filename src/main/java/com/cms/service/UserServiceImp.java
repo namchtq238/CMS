@@ -6,6 +6,7 @@ import com.cms.constants.ERole;
 import com.cms.controller.request.ChangePasswordReq;
 import com.cms.controller.request.UserInfoReq;
 import com.cms.controller.request.UserReq;
+import com.cms.controller.response.LoginResponse;
 import com.cms.controller.response.UserInfoRes;
 import com.cms.controller.service.UserService;
 import com.cms.database.StaffRepo;
@@ -45,7 +46,7 @@ public class UserServiceImp implements UserService {
     @Override
     @SneakyThrows
     @Transactional(rollbackOn = Exception.class)
-    public void registerUser(@Valid UserReq req) throws RuntimeException {
+    public User registerUser(@Valid UserReq req) throws RuntimeException {
         try {
             User user = new User();
             if (userRepo.existsByUserName(req.getUsername()))
@@ -58,6 +59,7 @@ public class UserServiceImp implements UserService {
             Staff staff = new Staff();
             staff.setUser(user);
             staffRepo.save(staff);
+            return user;
         } catch (Exception e) {
             throw new MessageDescriptorFormatException(e.getMessage());
         }

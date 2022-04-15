@@ -58,7 +58,6 @@ public class CommentServiceImp implements CommentService {
 
         Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
         Long staffId = userRepository.findStaffIdByUserId(commentReq.getStaffId()); // cái này là tìm ra staffId từ userId, nhưng vì đã gắn vào request rồi nên ko để tên, mọi người chú ý
-        System.err.println(staffId);
         idea.setLastComment(Instant.now());
         Staff staffIdea = idea.getStaff();
         Staff staffComment = staffRepo.findById(staffId).orElseThrow(() -> new RuntimeException("NOT FOUND"));
