@@ -34,7 +34,7 @@ public class LikesController {
             return responseHelper.successResp(likesService.changeStatusLike(changeStatusReq), HttpStatus.OK);
         }catch (Exception ex){
             logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError().body("This idea is not responding");
+            return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
 
