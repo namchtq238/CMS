@@ -183,7 +183,7 @@ public class IdeaServiceImp implements IdeaService {
         QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
         mailDTO.setContent("Someone has name " + user.getName() + "post an idea to your department");
         mailDTO.setFrom("noreply@gmail.com");
-        mailDTO.setTo(qa.getUser().getEmail());
+        mailDTO.setTo("longphgcs17521@gmail.com");
         mailDTO.setSubject("User Post idea");
         mailSender.sendMail(mailDTO);
 
