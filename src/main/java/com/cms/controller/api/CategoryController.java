@@ -62,7 +62,8 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         try {
-            return responseHelper.successResp(categoryService.delete(id), HttpStatus.OK);
+            categoryService.delete(id);
+            return responseHelper.successResp("Delete Success", HttpStatus.OK);
         }
         catch (Exception e){
             return responseHelper.infoResp(e.getMessage(),HttpStatus.NOT_FOUND);

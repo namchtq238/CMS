@@ -10,21 +10,25 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "category")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "created_date")
     private Instant createdDate;
 
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "active")
     private boolean active = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "qa_id", referencedColumnName = "id")
-    private QA qa;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Idea> idea;
+    @Column(name = "name")
+    private String name;
 }

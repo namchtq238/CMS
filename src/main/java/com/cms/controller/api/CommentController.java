@@ -33,7 +33,7 @@ public class CommentController {
             return responseHelper.successResp(commentService.postComment(commentReq), HttpStatus.CREATED);
         }
         catch (Exception e){
-            return responseHelper.infoResp(e.getMessage(), HttpStatus.NO_CONTENT);
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,15 +1,13 @@
 package com.cms.service;
-
+import com.cms.constants.ERole;
 import com.cms.controller.request.StaffReq;
 import com.cms.controller.response.StaffRes;
 import com.cms.controller.service.StaffService;
 import com.cms.controller.service.UserService;
-import com.cms.database.QaRepo;
-import com.cms.database.StaffRepo;
 import com.cms.database.UserRepository;
-import com.cms.entity.QA;
-import com.cms.entity.Staff;
 import com.cms.entity.User;
+import com.cms.mapper.Mapper;
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,107 +21,69 @@ import java.util.stream.Collectors;
 public class StaffServiceImp implements StaffService {
     @Autowired
     UserService userService;
-    @Autowired
-    StaffRepo staffRepo;
+
     @Autowired
     PasswordEncoder passwordEncoder;
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
-    QaRepo qaRepo;
-
-    @Override
-    public Staff getCurrentStaff() {
-        User user = userService.getCurrentUser();
-        return staffRepo.getStaffByUser(user);
-    }
-
+    Mapper mapper;
     @Override
     public List<StaffRes> getAllStaff() {
-        List<Staff> staffList = staffRepo.getAll();
-        return staffList.stream().map(this::getStaffRes).collect(Collectors.toList());
-
+        List<User> userList = userRepository.findByRole(ERole.STAFF.getValue());
+        return userList.stream().map(entity -> mapper.entityStaffToStaffRes(entity)).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public StaffRes createNewStaff(StaffReq staffReq) {
         User user = new User();
-        Staff staff = new Staff();
         user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
         user.setUserName(staffReq.getUsername());
         user.setAddress(staffReq.getAddress());
         user.setEmail(staffReq.getEmail());
-        user.setRole(1);
+        user.setRole(ERole.STAFF.getValue());
         user.setName(staffReq.getName());
         userRepository.save(user);
-        staff.setPosition(staffReq.getPosition());
-        staff.setUser(user);
-        staffRepo.save(staff);
-        return getStaffRes(staff);
-    }
-
-    @Override
-    public StaffRes getStaff(Long id) {
-        Optional<Staff> opt = staffRepo.findById(id);
-        if (opt.isEmpty()) throw new RuntimeException("Not Found");
-        Staff staff = opt.get();
-        return getStaffRes(staff);
-    }
-
-    private StaffRes getStaffRes(Staff staff) {
-        StaffRes res = new StaffRes();
-        res.setStaffId(staff.getId());
-        res.setPosition(staff.getPosition());
-        res.setUserId(staff.getUser().getId());
-        res.setName(staff.getUser().getName());
-        res.setAddress(staff.getUser().getAddress());
-        res.setEmail(staff.getUser().getEmail());
-        res.setRole(staff.getUser().getRole());
-        res.setUsername(staff.getUser().getUserName());
-
+        userRepository.save(user);
+        StaffRes res = mapper.entityStaffToStaffRes(user);
         return res;
     }
 
     @Override
+    public StaffRes getStaff(Long id) {
+        Optional<User> userOpt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
+        if(userOpt.isEmpty()) return null;
+        User user = userOpt.get();
+
+        return mapper.entityStaffToStaffRes(user);
+    }
+
+    @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public boolean delete(Long id) {
-        Optional<Staff> opt = staffRepo.findById(id);
-        if (opt.isEmpty()) throw new RuntimeException("Not Found");
-        userRepository.delete(opt.get().getUser());
-        return true;
+    public void delete(Long id) {
+        Optional<User> opt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
+        if (opt.isEmpty()) throw new MessageDescriptorFormatException("Could not found Staff with id: " + id);
+        User user = opt.get();
+        userRepository.delete(user);
     }
 
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public StaffRes update(Long id, StaffReq staffReq) {
-        Optional<Staff> opt = staffRepo.findById(id);
-        if (opt.isEmpty()) throw new RuntimeException("Not Found");
-        Staff staff = opt.get();
+        Optional<User> opt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
+        if (opt.isEmpty()) throw new RuntimeException("Could not found Staff with id: " + id);
+        User user = opt.get();
 
-        Optional<User> optionalUser = userRepository.findById(staff.getUser().getId());
-        if (optionalUser.isEmpty()) throw new RuntimeException("Not Found");
-        User user = optionalUser.get();
         user.setName(staffReq.getName());
         user.setEmail(staffReq.getEmail());
         user.setRole(staffReq.getRole());
         user.setUserName(staffReq.getUsername());
-        if(!staffReq.getPassword().isBlank())  {
-            user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
-        }
         user.setAddress(staffReq.getAddress());
-        staff.setPosition(staff.getPosition());
-        if (staffReq.getRole()==1){
-            staffRepo.save(staff);
-        }
-        else{
-            QA qa = new QA();
-            qa.setUser(user);
-            staffRepo.delete(staff);
-            qaRepo.save(qa);
-        }
         userRepository.save(user);
 
-        return getStaffRes(staff);
+        return mapper.entityStaffToStaffRes(user);
     }
 }

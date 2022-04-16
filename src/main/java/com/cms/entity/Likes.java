@@ -16,19 +16,21 @@ import java.time.Instant;
 public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "is_like")
     private Integer isLike;
 
+    @Column(name = "created_at")
     private Instant createdAt;
 
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "staff_id", referencedColumnName = "id")
-    private Staff staff;
+    @Column(name = "idea_id")
+    private Long ideaId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idea_id", referencedColumnName = "id")
-    private Idea idea;
+    @Column(name = "user_id")
+    private Long userId;
 }

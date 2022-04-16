@@ -34,8 +34,9 @@ public class StaffController {
         }
 
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStaff(@PathVariable Long id){
+    public ResponseEntity<?> getStaff(@PathVariable Long id) {
         try {
             return responseHelper.successResp(staffService.getStaff(id), HttpStatus.OK);
         } catch (Exception e) {
@@ -44,25 +45,23 @@ public class StaffController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStaff(@PathVariable Long id, @RequestBody StaffReq staffReq){
+    public ResponseEntity<?> updateStaff(@PathVariable Long id, @RequestBody StaffReq staffReq) {
         try {
-            if(staffReq.getRole()==1){
-                return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
-            }
-            else {
-                return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
-            }
-        } catch (Exception e) {
+            return responseHelper.successResp(staffService.update(id, staffReq), HttpStatus.CREATED);
+        } catch (
+                Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStaff(@PathVariable Long id){
+    public ResponseEntity<?> deleteStaff(@PathVariable Long id) {
         try {
-            return responseHelper.successResp(staffService.delete(id), HttpStatus.OK);
-        }
-        catch (Exception e){
-            return responseHelper.infoResp(e.getMessage(),HttpStatus.NOT_FOUND);
+            staffService.delete(id);
+            return responseHelper.successResp("Delete Success", HttpStatus.OK);
+        } catch (Exception e) {
+            return responseHelper.infoResp(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
     }

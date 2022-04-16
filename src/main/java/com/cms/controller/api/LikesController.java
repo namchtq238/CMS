@@ -4,7 +4,6 @@ import com.cms.config.dto.ResponseHelper;
 import com.cms.controller.request.ChangeStatusReq;
 import com.cms.controller.service.LikesService;
 import com.cms.controller.service.StaffService;
-import com.cms.entity.Staff;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +30,11 @@ public class LikesController {
     @PostMapping("/change-status")
     public ResponseEntity<?> changeStatusLikes(@RequestBody ChangeStatusReq changeStatusReq){
         try{
-            return responseHelper.successResp(likesService.changeStatusLike(changeStatusReq), HttpStatus.OK);
+            likesService.changeStatusLike(changeStatusReq);
+            return responseHelper.successResp("OK", HttpStatus.OK);
         }catch (Exception ex){
             logger.error(ex.getMessage());
-            return ResponseEntity.internalServerError().body("This idea is not responding");
+            return responseHelper.successResp(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

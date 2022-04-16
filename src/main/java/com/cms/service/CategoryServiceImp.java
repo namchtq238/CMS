@@ -5,6 +5,7 @@ import com.cms.controller.response.CategoryRes;
 import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
 import com.cms.entity.Category;
+import com.cms.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +19,13 @@ public class CategoryServiceImp implements CategoryService {
     @Autowired
     CategoryRepo categoryRepo;
 
+    @Autowired
+    Mapper mapper;
+
     @Override
     public List<CategoryRes> categoryList() {
         List<Category> list = categoryRepo.findAll();
-        return list.stream().map(category -> {
-            CategoryRes res = new CategoryRes();
-            res.setActive(category.isActive());
-            res.setCreatedDate(category.getCreatedDate().toString());
-            res.setName(category.getDescription());
-            res.setId(category.getId());
-            return res;
-        }).collect(Collectors.toList());
+        return list.stream().map(category -> mapper.entityCategoryToCategoryRes(category)).collect(Collectors.toList());
     }
 
     @Override
@@ -39,12 +36,7 @@ public class CategoryServiceImp implements CategoryService {
         category.setDescription(categoryReq.getName());
         category = categoryRepo.save(category);
         categoryRepo.flush();
-        CategoryRes res = new CategoryRes();
-        res.setName(categoryReq.getName());
-        res.setCreatedDate(category.getCreatedDate().toString());
-        res.setActive(categoryReq.isActive());
-        res.setId(category.getId());
-        return res;
+        return mapper.entityCategoryToCategoryRes(category);
     }
 
     @Override
@@ -52,11 +44,7 @@ public class CategoryServiceImp implements CategoryService {
         Optional<Category> opt = categoryRepo.findById(id);
         if (opt.isPresent()){
             Category category = opt.get();
-            CategoryRes res = new CategoryRes();
-            res.setCreatedDate(category.getCreatedDate().toString());
-            res.setName(category.getDescription());
-            res.setActive(category.isActive());
-            return res;
+            return mapper.entityCategoryToCategoryRes(category);
         }
         return null;
     }
@@ -70,22 +58,17 @@ public class CategoryServiceImp implements CategoryService {
             category.setActive(categoryReq.isActive());
             category.setCreatedDate(Instant.now());
             categoryRepo.save(category);
-            CategoryRes res = new CategoryRes();
-            res.setCreatedDate(category.getCreatedDate().toString());
-            res.setName(category.getDescription());
-            res.setActive(category.isActive());
-            return res;
+
+            return mapper.entityCategoryToCategoryRes(category);
         }
         return null;
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         Optional<Category> category = categoryRepo.findById(id);
         if (category.isPresent()) {
             categoryRepo.delete(category.get());
-            return true;
         }
-        return false;
     }
 }

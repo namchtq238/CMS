@@ -1,7 +1,7 @@
 package com.cms.constants;
 
 public enum LikeStatus {
-    INACTIVE(1, "INACTIVE"), LIKE(2, "LIKE"), DISLIKE(3, "DISLIKE");
+    LIKE(2, "LIKE"), DISLIKE(3, "DISLIKE");
     private Integer type;
     private String typeInStr;
     LikeStatus(Integer type, String typeInStr){

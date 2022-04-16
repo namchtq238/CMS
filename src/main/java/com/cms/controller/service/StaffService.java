@@ -2,12 +2,11 @@ package com.cms.controller.service;
 
 import com.cms.controller.request.StaffReq;
 import com.cms.controller.response.StaffRes;
-import com.cms.entity.Staff;
+import com.cms.entity.User;
 
 import java.util.List;
 
 public interface StaffService {
-    Staff getCurrentStaff();
 
     List<StaffRes> getAllStaff();
 
@@ -15,7 +14,7 @@ public interface StaffService {
 
     StaffRes getStaff(Long id);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
     StaffRes update(Long id, StaffReq staffReq);
 

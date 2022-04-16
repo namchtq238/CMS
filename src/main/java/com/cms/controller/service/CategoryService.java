@@ -10,5 +10,5 @@ public interface CategoryService {
     CategoryRes addCategory(CategoryReq categoryReq);
     CategoryRes getACategory(Long id);
     CategoryRes putACategory(Long id, CategoryReq categoryReq);
-    boolean delete(Long id);
+    void delete(Long id);
 }

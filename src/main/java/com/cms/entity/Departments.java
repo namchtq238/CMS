@@ -10,26 +10,25 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
+@Table(name = "departments")
 public class Departments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "start_date")
     private Instant startDate;
 
+    @Column(name = "closure_date_idea")
     private Instant closureDateIdea;
 
+    @Column(name = "closure_date")
     private Instant closureDate;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "university_id", referencedColumnName = "id")
-    private University university;
-
-    @OneToOne(mappedBy = "departments", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private QA qa;
-
-    @NotNull
-    private boolean isDelete = false;
+    @Column(name = "user_id")
+    private Long userId;
 }

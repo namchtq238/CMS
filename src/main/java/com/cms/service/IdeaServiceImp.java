@@ -72,9 +72,6 @@ public class IdeaServiceImp implements IdeaService {
     Mapper mapper;
 
     @Autowired
-    QaRepo qaRepo;
-
-    @Autowired
     LikeRepo likeRepo;
 
     @Value("${file.upload-dir}")
@@ -172,18 +169,17 @@ public class IdeaServiceImp implements IdeaService {
         idea.setTimeUp(Instant.parse(req.getEndDate()));
         idea.setCreatedDate(Instant.now());
         idea.setDepartmentId(req.getDepartmentId());
-        idea.setStaff(userOpt.get().getStaff());
-        Category category = new Category();
-        category.setId(req.getCategoryId());
-        idea.setCategory(category);
+        idea.setUserId(req.getUserId());
+        idea.setCategoryId(req.getCategoryId());
         idea = ideaRepository.save(idea);
 
 //        send mail
         MailDTO mailDTO = new MailDTO();
-        QA qa = qaRepo.getByDepartmentsId(req.getDepartmentId());
+        Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
+        if(qa.isEmpty()) throw new RuntimeException("Cannot find QA with department ID: " + req.getDepartmentId());
         mailDTO.setContent("Someone has name " + user.getName() + "post an idea to your department");
-        mailDTO.setFrom("noreply@gmail.com");
-        mailDTO.setTo("longphgcs17521@gmail.com");
+        mailDTO.setFrom("gogitek.wibu.love.anal@gmail.com");
+        mailDTO.setTo(qa.get().getUserName());
         mailDTO.setSubject("User Post idea");
         mailSender.sendMail(mailDTO);
 

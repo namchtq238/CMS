@@ -9,22 +9,25 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
+@Table(name = "comment")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "content")
     private String content;
 
+    @Column(name = "created_date")
     private Instant createdDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idea_id", referencedColumnName = "id")
-    private Idea idea;
+    @Column(name = "idea_id")
+    private Long ideaId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "staff_id", referencedColumnName = "id")
-    private Staff staff;
-
+    @Column(name = "anonymous")
     private boolean anonymous = false;
+
+    @Column(name = "user_id")
+    private Long userId;
 }

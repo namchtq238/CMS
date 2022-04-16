@@ -11,42 +11,45 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name = "idea")
 public class Idea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private Long id;
 
+    @Column(name = "start_date")
     private Instant startDate;
 
+    @Column(name = "time_up")
     private Instant timeUp;
 
+    @Column(name = "description")
     private String description;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id", referencedColumnName = "id")
     private Document document;
 
+    @Column(name = "department_id")
     private Long departmentId;
 
+    @Column(name = "created_date")
     private Instant createdDate;
 
+    @Column(name = "name")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "staff_id", referencedColumnName = "id")
-    private Staff staff;
+    @Column(name = "category_id")
+    private Long categoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    private Category category;
-
-    @OneToMany(mappedBy = "idea", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    private List<Likes> like;
-
-    @OneToMany(mappedBy = "idea", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    private List<Comment> comments;
-
+    @Column(name = "anonymous")
     private boolean anonymous = false;
 
+    @Column(name = "last_comment")
     private Instant lastComment;
+
+    @Column(name = "user_id")
+    private Long userId;
+
 }

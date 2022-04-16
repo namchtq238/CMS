@@ -20,4 +20,5 @@ public class DepartmentReq {
 
      String closureDate;
 
+     Long id;
 }

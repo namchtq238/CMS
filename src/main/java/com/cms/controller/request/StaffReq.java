@@ -12,7 +12,6 @@ public class StaffReq {
     String name;
     String password;
     String email;
-    String position;
     String address;
     Integer role;
 }
