@@ -48,7 +48,7 @@ public class StatisticServiceImp implements StatisticService {
 
         List<Likes> likes = likeRepo.findAll();
         int totalLikes = likes.size() == 0 ? 0: (int) likes.stream().filter(like -> like.getCreatedAt() != null && (like.getCreatedAt().isAfter(processTime)
-                || like.getCreatedAt().isAfter(processTime))).count();
+                || like.getUpdatedAt().isAfter(processTime))).count();
 
         List<Comment> comments = commentRepo.findAll();
         int totalComments = (int) comments.stream().filter(comment -> comment.getCreatedDate() != null && comment.getCreatedDate().isAfter(processTime)).count();
