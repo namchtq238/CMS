@@ -26,6 +26,6 @@ public interface LikeRepo extends JpaRepository<Likes, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "insert into like_detail(idea_id, staff_id, is_like, created_date) values(?1, ?2, 1, ?3) ", nativeQuery = true)
+    @Query(value = "insert into `like_detail`(`idea_id`, `staff_id`, `is_like`, `created_at`) values(?1, ?2, 1, ?3) ", nativeQuery = true)
     void saveLikeByStaffIdAndIdeaId(Long staffId, Long ideaId, Instant now);
 }

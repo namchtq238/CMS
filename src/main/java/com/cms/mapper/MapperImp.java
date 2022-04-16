@@ -16,7 +16,7 @@ public class MapperImp implements Mapper{
         res.setDepartmentId(idea.getDepartmentId());
         res.setTimeUp(idea.getTimeUp() == null ? null : idea.getTimeUp().toString());
         res.setDescription(idea.getDescription());
-        res.setStaffId(idea.getStaff().getId());
+//        res.setStaffId(idea.getStaff().getId());
         return res;
     }
 }
