@@ -6,6 +6,7 @@ import com.cms.controller.service.CategoryService;
 import com.cms.database.CategoryRepo;
 import com.cms.entity.Category;
 import com.cms.mapper.Mapper;
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +71,6 @@ public class CategoryServiceImp implements CategoryService {
         if (category.isActive() == false){
             categoryRepo.delete(category);
         }
+        else throw new MessageDescriptorFormatException("Category is active, cannot delete");
     }
 }

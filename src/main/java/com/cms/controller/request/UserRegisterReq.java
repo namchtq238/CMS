@@ -15,4 +15,10 @@ public class UserRegisterReq {
 
     @NotNull
     private String email;
+
+    @NotNull
+    private String role;
+
+    @NotNull
+    private String position;
 }

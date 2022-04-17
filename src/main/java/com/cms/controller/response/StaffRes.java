@@ -11,7 +11,6 @@ public class StaffRes {
     Long staffId;
     String position;
     String name;
-    String address;
     Integer role;
     String email;
     String username;

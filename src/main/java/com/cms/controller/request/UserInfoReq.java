@@ -6,6 +6,7 @@ import lombok.Getter;
 public class UserInfoReq {
     Long id;
     String name;
-    String address;
+    String position;
     String email;
+    Integer role;
 }

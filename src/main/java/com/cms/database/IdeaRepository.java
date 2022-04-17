@@ -28,7 +28,7 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
             "idea.NAME AS ideaName, " +
             "document.url AS url, " +
             "like_detail.is_like as likeStatus, " +
-            "`users`.name as creatorName " +
+            "`users`.position as creatorName " +
             "FROM `idea` " +
             "LEFT JOIN `departments` " +
             "ON `idea`.department_id = `departments`.id " +

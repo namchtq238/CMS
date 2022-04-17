@@ -68,16 +68,17 @@ public class UserServiceImp implements UserService {
         User user = userOpt.get();
 
         user.setName(req.getName());
-        user.setAddress(req.getAddress());
+        user.setPosition(req.getPosition());
         user.setEmail(req.getEmail());
 
         userRepo.save(user);
 
         return UserInfoRes.builder()
                 .name(req.getName())
-                .address(req.getAddress())
+                .position(req.getPosition())
                 .username(user.getUserName())
                 .email(req.getEmail())
+                .role(req.getRole())
                 .build();
     }
 

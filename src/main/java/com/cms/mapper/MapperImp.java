@@ -27,7 +27,7 @@ public class MapperImp implements Mapper{
         if(user == null) return null;
         return StaffRes.builder()
                 .staffId(user.getId())
-                .address(user.getAddress())
+                .position(user.getPosition())
                 .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole())

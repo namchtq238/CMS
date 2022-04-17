@@ -48,9 +48,9 @@ public class StaffServiceImp implements StaffService {
         User user = new User();
         user.setPassword(passwordEncoder.encode(staffReq.getPassword()));
         user.setUserName(staffReq.getUsername());
-        user.setAddress(staffReq.getAddress());
+        user.setPosition(staffReq.getPosition());
         user.setEmail(staffReq.getEmail());
-        user.setRole(ERole.STAFF.getValue());
+        user.setRole(staffReq.getRole());
         user.setName(staffReq.getName());
         userRepository.save(user);
         userRepository.save(user);
@@ -99,7 +99,7 @@ public class StaffServiceImp implements StaffService {
         user.setEmail(staffReq.getEmail());
         user.setRole(staffReq.getRole());
         user.setUserName(staffReq.getUsername());
-        user.setAddress(staffReq.getAddress());
+        user.setPosition(staffReq.getPosition());
         userRepository.save(user);
 
         return mapper.entityStaffToStaffRes(user);
