@@ -43,7 +43,6 @@ public class DepartmentServiceImp implements DepartmentService {
         Sort sort = Sort.by("id");
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<DepartmentConverter> data = departmentsRepo.getListDepartments(keyWord, pageable);
-
         result.setTotal(data.getTotalElements());
         result.setItems(data.stream().map(converter -> mapper.converterDepartmentToDepartmentRes(converter)).collect(Collectors.toList()));
         return result;
