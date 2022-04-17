@@ -56,7 +56,7 @@ public class CommentServiceImp implements CommentService {
         idea.setLastComment(Instant.now());
         Long staffId = idea.getUserId();
         User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.STAFF.getValue())
-                .orElseThrow(() -> new RuntimeException("Connot found user with ID: " + idea.getUserId()));
+                .orElseThrow(() -> new RuntimeException("Cannot found user with ID: " + idea.getUserId()));
         Optional<User> staffComment = userRepository.findById(commentReq.getStaffId());
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
