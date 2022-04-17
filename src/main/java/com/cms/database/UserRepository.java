@@ -2,9 +2,11 @@ package com.cms.database;
 
 import com.cms.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +28,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select `user`.* from user left join `departments` on `user`.id = `departments`.user_id where `departments`.id = ?1", nativeQuery = true)
     Optional<User> findUserByDepartmentId(Long departmentId);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "delete `users`.*, `document`.*, `like_detail`.*, `comment`.*, `departments`.*, `idea`.* " +
+            "from `users` left join `departments` on users.id=departments.user_id " +
+            "left join idea on departments.id=idea.department_id " +
+            "left join like_detail on like_detail.idea_id=idea.id " +
+            "left join comment on idea.id=comment.idea_id " +
+            "left join document on users.id=document.user_id " +
+            "where users.id=?1")
+    void deleteQA(Long id);
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "delete `users`.*, `like_detail`.*, `comment`.*, `idea`.* from `users` " +
+            "left join `idea` on users.id=idea.user_id " +
+            "left join like_detail on like_detail.user_id=user.id " +
+            "left join comment on users.id=comment.user_id " +
+            "where users.id=?1")
+
+    void  deleteStaff(Long id);
+
 }
