@@ -29,6 +29,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletOutputStream;
 import javax.transaction.Transactional;
 import java.io.*;
@@ -139,7 +141,7 @@ public class IdeaServiceImp implements IdeaService {
     //Optimze code từ chạy 7s -> 3s
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public ListIdeaRes uploadDocumentInScheduled(UploadReq req) {
+    public ListIdeaRes uploadDocumentInScheduled(UploadReq req) throws AddressException {
         Optional<User> userOpt = userRepo.findById(req.getUserId());
         if (userOpt.isEmpty())
             throw new RuntimeException("Not Found");
@@ -185,18 +187,13 @@ public class IdeaServiceImp implements IdeaService {
         Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
         if(qa.isEmpty()) throw new RuntimeException("Cannot find QA with department ID: " + req.getDepartmentId());
         mailDTO.setContent("Someone has name " + user.getName() + "post an idea to your department");
-        mailDTO.setFrom("gogitek.wibu.love.anal@gmail.com");
-        mailDTO.setTo(qa.get().getUserName());
+        mailDTO.setFrom(new InternetAddress("gogitek.wibu.love.anal@gmail.com").getAddress());
+        mailDTO.setTo(qa.get().getEmail());
         mailDTO.setSubject("User Post idea");
         mailSender.sendMail(mailDTO);
 
         ListIdeaRes res = mapper.ideaToRes(idea);
-        Category  category = categoryRepo.getById(res.getCategoryId());
-
-        if(category != null) {
-            res.setCategoryName(category.getName());
-        }
-
+        res.setCategoryName(category.getName());
         res.setTotalComment(0);
         res.setTotalLike(0);
         res.setUrl(fileOriginalUri);

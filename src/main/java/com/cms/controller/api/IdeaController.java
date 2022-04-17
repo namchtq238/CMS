@@ -61,7 +61,7 @@ public class IdeaController {
             if (req.getRole().equals(ERole.ADMIN.getTypeInStr()) || req.getRole().equals(ERole.QA.getTypeInStr())) {
                 InputStreamResource streamResource = new InputStreamResource(ideaService.downloadFile(req));
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=resource.zip")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=resource.zip")
                         .contentType(MediaType.APPLICATION_OCTET_STREAM)
                         .body(streamResource);
             }
@@ -85,7 +85,7 @@ public class IdeaController {
         }
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
+        if (contentType == null) {
             contentType = "application/octet-stream";
         }
 
@@ -102,7 +102,7 @@ public class IdeaController {
             String filename = "data_idea_" + Instant.now();
             InputStreamResource file = ideaService.exportAllListIdeaInCsv(id, sortBy);
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + ".csv")
                     .contentType(MediaType.parseMediaType("application/csv"))
                     .body(file);
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class IdeaController {
                                            @RequestParam(name = "page", defaultValue = "0") Integer page,
                                            @RequestParam(name = "size", defaultValue = "5") Integer size) {
         try {
-            return responseHelper.successResp(ideaService.getDetailRes(id, staffId, page, size),HttpStatus.OK);
+            return responseHelper.successResp(ideaService.getDetailRes(id, staffId, page, size), HttpStatus.OK);
         } catch (Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
