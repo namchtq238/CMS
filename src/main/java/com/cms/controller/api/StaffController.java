@@ -19,7 +19,7 @@ public class StaffController {
     @GetMapping()
     public ResponseEntity<?> getallStaff() {
         try {
-            return responseHelper.successResp(staffService.getAllStaff(), HttpStatus.OK);
+            return responseHelper.successResp(staffService.getAllStaffAndQa(), HttpStatus.OK);
         } catch (Exception e) {
             return responseHelper.infoResp(e.getMessage(), HttpStatus.NOT_FOUND);
         }

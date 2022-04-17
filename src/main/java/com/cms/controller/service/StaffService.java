@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface StaffService {
 
-    List<StaffRes> getAllStaff();
+    List<StaffRes> getAllStaffAndQa();
 
     StaffRes createNewStaff(StaffReq staffReq);
 

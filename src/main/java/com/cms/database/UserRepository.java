@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole(Integer role);
 
+    @Query(value = "select `users`.* from users where `users`.role = 1 or `users`.role = 3", nativeQuery = true)
+    List<User> findByRoleStaffAndQa();
+
     Optional<User> getByIdAndRole(Long id, Integer role);
 
     @Query(value = "select `user`.* from user left join `departments` on `user`.id = `departments`.user_id where `departments`.id = ?1", nativeQuery = true)
