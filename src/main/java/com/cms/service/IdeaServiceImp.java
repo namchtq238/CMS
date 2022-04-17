@@ -264,7 +264,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalDislike(totalDislike);
         if(statusLike == null) res.setLikeStatus(1);
         res.setLikeStatus(statusLike);
-        user.ifPresent(value -> res.setCreatorName(value.getName()));
+        user.ifPresent(value -> res.setCreatorName(value.getPosition()));
         return res;
     }
 

@@ -49,7 +49,7 @@ public class UserServiceImp implements UserService {
             user.setPassword(passwordEncoder.encode(req.getPassword()));
             user.setEmail(req.getEmail());
             user.setRole(ERole.STAFF.getValue());
-
+            user.setPosition(req.getPosition());
             userRepo.save(user);
             transactionManager.commit(transaction);
         } catch (Exception e) {
