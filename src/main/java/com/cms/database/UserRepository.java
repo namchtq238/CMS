@@ -43,7 +43,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(nativeQuery = true, value = "delete `users`.*, `like_detail`.*, `comment`.*, `idea`.* from `users` " +
             "left join `idea` on users.id=idea.user_id " +
-            "left join like_detail on like_detail.user_id=user.id " +
+            "left join like_detail on like_detail.user_id=users.id " +
             "left join comment on users.id=comment.user_id " +
             "where users.id=?1")
 
