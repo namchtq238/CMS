@@ -172,7 +172,10 @@ public class IdeaServiceImp implements IdeaService {
         idea.setUserId(req.getUserId());
         idea.setCategoryId(req.getCategoryId());
         idea = ideaRepository.save(idea);
-
+        // update category
+        Category category = categoryRepo.getById(req.getCategoryId());
+        category.setActive(true);
+        categoryRepo.save(category);
 //        send mail
         MailDTO mailDTO = new MailDTO();
         Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
@@ -219,7 +222,6 @@ public class IdeaServiceImp implements IdeaService {
 
     @Override
     public IdeaDetailRes getDetailRes(Long ideaId, Long userId, Integer page, Integer size) {
-        Long staffId = userRepo.findStaffIdByUserId(userId);
         Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
@@ -228,7 +230,7 @@ public class IdeaServiceImp implements IdeaService {
 
         Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
         Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
-        Integer statusLike = likeRepo.findLikeStatusByIdeaIdAndStaffId(ideaId, staffId);
+        Integer statusLike = likeRepo.findLikeStatusByIdeaIdAndStaffId(ideaId, userId);
         //sap xep theo ngay cmt moi nhat
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
