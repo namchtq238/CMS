@@ -167,7 +167,7 @@ public class IdeaServiceImp implements IdeaService {
         //save Idea
         Idea idea = new Idea();
         idea.setDescription(req.getDescription());
-        idea.setDocument(document);
+        idea.setDocumentId(document.getId());
         idea.setName(req.getName());
         idea.setStartDate(Instant.parse(req.getStartDate()));
         idea.setTimeUp(Instant.parse(req.getEndDate()));
@@ -176,7 +176,10 @@ public class IdeaServiceImp implements IdeaService {
         idea.setUserId(req.getUserId());
         idea.setCategoryId(req.getCategoryId());
         idea = ideaRepository.save(idea);
-
+        // update category
+        Category category = categoryRepo.getById(req.getCategoryId());
+        category.setActive(true);
+        categoryRepo.save(category);
 //        send mail
         MailDTO mailDTO = new MailDTO();
         Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
@@ -229,16 +232,16 @@ public class IdeaServiceImp implements IdeaService {
 
     @Override
     public IdeaDetailRes getDetailRes(Long ideaId, Long userId, Integer page, Integer size) {
-        Long staffId = userRepo.findStaffIdByUserId(userId);
         Optional<Idea> ideaOpt = ideaRepository.findById(ideaId);
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
+        Document document = documentRepo.getById(idea.getDocumentId());
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
 
         Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
         Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
-        Integer statusLike = likeRepo.findLikeStatusByIdeaIdAndStaffId(ideaId, staffId);
+        Integer statusLike = likeRepo.findLikeStatusByIdeaIdAndStaffId(ideaId, userId);
         //sap xep theo ngay cmt moi nhat
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
@@ -257,7 +260,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setDescription(idea.getDescription());
         res.setTotalLike(totalLike);
         res.setTotalComment(totalComment);
-        res.setUrl(idea.getDocument().getUrl());
+        res.setUrl(document.getUrl());
         res.setTotalDislike(totalDislike);
         if(statusLike == null) res.setLikeStatus(1);
         res.setLikeStatus(statusLike);

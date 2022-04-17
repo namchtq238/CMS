@@ -66,9 +66,9 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public void delete(Long id) {
-        Optional<Category> category = categoryRepo.findById(id);
-        if (category.isPresent()) {
-            categoryRepo.delete(category.get());
+        Category category = categoryRepo.findById(id).orElseThrow();
+        if (category.isActive() == false){
+            categoryRepo.delete(category);
         }
     }
 }

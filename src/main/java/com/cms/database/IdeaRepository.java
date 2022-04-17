@@ -22,7 +22,7 @@ public interface IdeaRepository extends JpaRepository<Idea, Long> {
     @Query(value = "SELECT idea.id AS id, " +
             "idea.time_up AS timeUp, " +
             "idea.description AS description, " +
-            "idea.staff_id AS staffId, " +
+            "idea.user_id AS staffId, " +
             "idea.category_id AS categoryId, " +
             "idea.department_id AS departmentId, " +
             "idea.NAME AS ideaName, " +

@@ -27,9 +27,8 @@ public class Idea {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "document_id", referencedColumnName = "id")
-    private Document document;
+    @Column(name = "document_id")
+    private Long documentId;
 
     @Column(name = "department_id")
     private Long departmentId;
