@@ -51,10 +51,12 @@ public class CommentServiceImp implements CommentService {
     public CommentPostRes postComment(CommentReq commentReq) {
         Comment comment = new Comment();
 
-        Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("Cannot found idea with id: " + commentReq.getIdeaId()));
+        Idea idea = ideaRepository.findById(commentReq.getIdeaId())
+                .orElseThrow(() -> new RuntimeException("Cannot found idea with id: " + commentReq.getIdeaId()));
         idea.setLastComment(Instant.now());
         Long staffId = idea.getUserId();
-        User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.QA.getValue()).orElseThrow(()-> new RuntimeException("Connot found idea with ID: " + idea.getUserId()));
+        User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.STAFF.getValue())
+                .orElseThrow(()-> new RuntimeException("Connot found user with ID: " + idea.getUserId()));
         Optional<User> staffComment = userRepository.getByIdAndRole(commentReq.getStaffId(), ERole.STAFF.getValue());
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
