@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 public class IdeaDetailRes {
     Long ideaId;
-    PaginationT<String> detailComment;
+    PaginationT<CommentPostRes> detailComment;
     Integer totalLike;
     Integer totalDislike;
     Integer totalComment;

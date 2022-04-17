@@ -9,8 +9,10 @@ import com.cms.constants.ERole;
 import com.cms.constants.LikeStatus;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
+import com.cms.controller.response.CommentPostRes;
 import com.cms.controller.response.IdeaDetailRes;
 import com.cms.controller.response.ListIdeaRes;
+import com.cms.controller.service.CommentService;
 import com.cms.controller.service.ExportService;
 import com.cms.controller.service.IdeaService;
 import com.cms.database.*;
@@ -80,6 +82,8 @@ public class IdeaServiceImp implements IdeaService {
     @Value("${file.download-dir}")
     String downloadDir;
 
+    @Autowired
+    CommentService commentService;
     //nhớ đánh index
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception {
@@ -184,6 +188,12 @@ public class IdeaServiceImp implements IdeaService {
         mailSender.sendMail(mailDTO);
 
         ListIdeaRes res = mapper.ideaToRes(idea);
+        Category  category = categoryRepo.getById(res.getCategoryId());
+
+        if(category != null) {
+            res.setCategoryName(category.getName());
+        }
+
         res.setTotalComment(0);
         res.setTotalLike(0);
         res.setUrl(fileOriginalUri);
@@ -233,9 +243,11 @@ public class IdeaServiceImp implements IdeaService {
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
 
-        PaginationT<String> listCommentContent = new PaginationT<>();
+        PaginationT<CommentPostRes> listCommentContent = new PaginationT<>();
         listCommentContent.setTotal(commentList.getTotalElements());
-        listCommentContent.setItems(commentContents.stream().map(Comment::getContent).collect(Collectors.toList()));
+        listCommentContent.setItems(commentContents.stream()
+                .map(comment -> commentService.mapToResponse(comment))
+                .collect(Collectors.toList()));
 
         IdeaDetailRes res = new IdeaDetailRes();
 
