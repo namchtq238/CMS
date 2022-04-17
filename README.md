@@ -17,3 +17,8 @@
    4. Xóa QA -> Xóa department của nó
    5. Xóa Category: chỉ thằng nào is_active = 0 mới được xóa (Tức là category đấy đang không được gắn với bất kỳ một idea nào)
 3. Pull code về từ master, resolve conflict trước khi push code
+
+#17/04/22 5pm
+delete staff phải xoá quan hệ document-idea
+chạy câu sql dưới trong db
+SET SQL_SAFE_UPDATES = 0;

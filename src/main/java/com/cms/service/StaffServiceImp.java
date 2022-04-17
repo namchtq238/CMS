@@ -11,6 +11,9 @@ import org.hibernate.validator.internal.engine.messageinterpolation.parser.Messa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -27,6 +30,9 @@ public class StaffServiceImp implements StaffService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Autowired
     Mapper mapper;
@@ -64,10 +70,22 @@ public class StaffServiceImp implements StaffService {
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public void delete(Long id) {
-        Optional<User> opt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
-        if (opt.isEmpty()) throw new MessageDescriptorFormatException("Could not found Staff with id: " + id);
-        User user = opt.get();
-        userRepository.delete(user);
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        try {
+            User user = userRepository.findById(id).orElseThrow(() -> new MessageDescriptorFormatException("Could not find staff with id: "+ id));
+            if (user.getRole()==3){
+                userRepository.deleteQA(id);
+            }
+            else if(user.getRole()==1){
+                userRepository.deleteStaff(id);
+            }
+            transactionManager.commit(transaction);
+        }
+        catch (Exception e){
+            transactionManager.rollback(transaction);
+            throw new MessageDescriptorFormatException("Could not delete user " +id);
+        }
     }
 
     @Override
