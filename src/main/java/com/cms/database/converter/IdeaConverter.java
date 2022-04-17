@@ -9,13 +9,15 @@ public interface IdeaConverter {
 
     Long getStaffId();
 
-     Long getCategoryId();
+    Long getCategoryId();
 
-     Long getDepartmentId();
+    Long getDepartmentId();
 
-     String getIdeaName();
+    String getIdeaName();
 
-     String getUrl();
+    String getUrl();
 
-     Integer getLikeStatus();
+    Integer getLikeStatus();
+
+    String getCreatorName();
 }

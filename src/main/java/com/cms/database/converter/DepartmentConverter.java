@@ -9,4 +9,5 @@ public interface DepartmentConverter {
     Instant getStartDate();
     Instant getClosureDateIdea();
     Instant getClosureDate();
+    Long getQaId();
 }

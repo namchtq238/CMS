@@ -15,7 +15,8 @@ public interface DepartmentsRepo extends JpaRepository<Departments, Long> {
             "`departments`.start_date as startDate," +
             "`departments`.closure_date_idea as closureDateIdea," +
             "`departments`.closure_date as closureDate, " +
-            "`users`.name as qaName  " +
+            "`users`.name as qaName,  " +
+            "`users`.id as  qaId " +
             "from `departments` " +
             "left join `users` on `departments`.user_id = `users`.id " +
             "where 1 = 1 " +

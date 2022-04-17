@@ -110,7 +110,7 @@ public class IdeaServiceImp implements IdeaService {
             res.setUrl(converter.getUrl());
             res.setLikeStatus(converter.getLikeStatus());
             res.setTotalDislike(likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), converter.getId()));
-
+            res.setCreatorName(converter.getCreatorName());
 
 
             return res;
@@ -237,6 +237,7 @@ public class IdeaServiceImp implements IdeaService {
         Idea idea = ideaOpt.get();
         Document document = documentRepo.getById(idea.getDocumentId());
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
+        Optional<User> user = userRepo.findById(idea.getUserId());
 
         Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
         Integer totalDislike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), ideaId);
@@ -263,7 +264,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setTotalDislike(totalDislike);
         if(statusLike == null) res.setLikeStatus(1);
         res.setLikeStatus(statusLike);
-
+        user.ifPresent(value -> res.setCreatorName(value.getName()));
         return res;
     }
 

@@ -9,6 +9,7 @@ import java.time.Instant;
 @Setter
 public class DepartmentResponse {
     Long id;
+    Long qaId;
     String name;
     String qaName;
     Instant startDate;

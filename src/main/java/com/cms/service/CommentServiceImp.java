@@ -56,8 +56,8 @@ public class CommentServiceImp implements CommentService {
         idea.setLastComment(Instant.now());
         Long staffId = idea.getUserId();
         User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.STAFF.getValue())
-                .orElseThrow(()-> new RuntimeException("Connot found user with ID: " + idea.getUserId()));
-        Optional<User> staffComment = userRepository.getByIdAndRole(commentReq.getStaffId(), ERole.STAFF.getValue());
+                .orElseThrow(() -> new RuntimeException("Connot found user with ID: " + idea.getUserId()));
+        Optional<User> staffComment = userRepository.findById(commentReq.getStaffId());
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
         comment.setIdeaId(idea.getId());
@@ -77,7 +77,7 @@ public class CommentServiceImp implements CommentService {
         CommentPostRes response = new CommentPostRes();
         response.setContent(comment.getContent());
         response.setIdeaId(comment.getIdeaId());
-        response.setStaffName(commentReq.isAnonymous() == true ? staffComment.get().getName() : null);
+        response.setStaffName(commentReq.isAnonymous() ? null : staffComment.get().getName());
 
         return response;
     }
@@ -96,13 +96,13 @@ public class CommentServiceImp implements CommentService {
     @Override
     public CommentPostRes mapToResponse(Comment comment) {
         User user = userRepository.findById(comment.getUserId()).orElse(null);
-        if(user == null) {
+        if (user == null) {
             return null;
         }
         CommentPostRes response = new CommentPostRes();
         response.setContent(comment.getContent());
         response.setIdeaId(comment.getIdeaId());
-        response.setStaffName(comment.isAnonymous() ? user.getName() : null);
+        response.setStaffName(comment.isAnonymous() ? null : user.getName());
         return response;
     }
 

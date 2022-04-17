@@ -32,4 +32,6 @@ public class ListIdeaRes {
     Integer likeStatus;
 
     Integer totalDislike;
+
+    String creatorName;
 }

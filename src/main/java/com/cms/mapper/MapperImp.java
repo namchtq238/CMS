@@ -67,6 +67,7 @@ public class MapperImp implements Mapper{
         res.setStartDate(converter.getStartDate());
         res.setClosureDate(converter.getClosureDate());
         res.setClosureDateIdea(converter.getClosureDateIdea());
+        res.setQaId(converter.getQaId());
         return res;
     }
 

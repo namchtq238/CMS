@@ -18,4 +18,5 @@ public class IdeaDetailRes {
     String ideaName;
     String url;
     Integer likeStatus;
+    String creatorName;
 }
