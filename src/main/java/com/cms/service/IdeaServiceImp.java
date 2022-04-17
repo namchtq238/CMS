@@ -109,6 +109,8 @@ public class IdeaServiceImp implements IdeaService {
             res.setName(converter.getIdeaName());
             res.setUrl(converter.getUrl());
             res.setLikeStatus(converter.getLikeStatus());
+            res.setTotalDislike(likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.DISLIKE.getValue(), converter.getId()));
+
 
 
             return res;

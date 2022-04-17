@@ -30,4 +30,6 @@ public class ListIdeaRes {
     String url;
 
     Integer likeStatus;
+
+    Integer totalDislike;
 }
