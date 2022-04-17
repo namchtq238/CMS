@@ -54,7 +54,7 @@ public class CommentServiceImp implements CommentService {
         Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("Cannot found idea with id: " + commentReq.getIdeaId()));
         idea.setLastComment(Instant.now());
         Long staffId = idea.getUserId();
-        User qaIdea = userRepository.getByIdAndRole(staffId, ERole.STAFF.getValue()).orElseThrow(() -> new RuntimeException("NOT FOUND"));
+        User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.QA.getValue()).orElseThrow(()-> new RuntimeException("Connot found idea with ID: " + idea.getUserId()));
         Optional<User> staffComment = userRepository.getByIdAndRole(commentReq.getStaffId(), ERole.STAFF.getValue());
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
@@ -67,7 +67,7 @@ public class CommentServiceImp implements CommentService {
         MailDTO mailDTO = new MailDTO();
         mailDTO.setContent("User " + staffComment.get().getUserName() + "commented in your idea");
         mailDTO.setFrom("gogitek.wibu.love.anal@gmail.com");
-        mailDTO.setTo(qaIdea.getEmail());
+        mailDTO.setTo(userIdea.getEmail());
         mailDTO.setSubject("User comment");
         mailSender.sendMail(mailDTO);
         ideaRepository.save(idea);
