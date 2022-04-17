@@ -172,7 +172,10 @@ public class IdeaServiceImp implements IdeaService {
         idea.setUserId(req.getUserId());
         idea.setCategoryId(req.getCategoryId());
         idea = ideaRepository.save(idea);
-
+        // update category
+        Category category = categoryRepo.getById(req.getCategoryId());
+        category.setActive(true);
+        categoryRepo.save(category);
 //        send mail
         MailDTO mailDTO = new MailDTO();
         Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
