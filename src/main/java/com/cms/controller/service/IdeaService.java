@@ -8,6 +8,7 @@ import com.cms.controller.response.IdeaDetailRes;
 import com.cms.controller.response.ListIdeaRes;
 import org.springframework.core.io.InputStreamResource;
 
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -18,7 +19,7 @@ import java.util.zip.ZipOutputStream;
 public interface IdeaService {
     PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception;
 
-    ListIdeaRes uploadDocumentInScheduled(UploadReq req) throws IOException;
+    ListIdeaRes uploadDocumentInScheduled(UploadReq req) throws IOException, AddressException;
 
     ByteArrayInputStream downloadFile(DownloadReq req) throws Exception;
 

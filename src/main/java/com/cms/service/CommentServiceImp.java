@@ -79,4 +79,30 @@ public class CommentServiceImp implements CommentService {
 
         return response;
     }
+
+    @Override
+    public CommentPostRes getCommentById(Long id) {
+        Comment comment = commentRepo.findById(id).orElse(null);
+        if (comment == null) {
+            return null;
+        }
+
+
+        return this.mapToResponse(comment);
+    }
+
+    @Override
+    public CommentPostRes mapToResponse(Comment comment) {
+        User user = userRepository.findById(comment.getUserId()).orElse(null);
+        if(user == null) {
+            return null;
+        }
+        CommentPostRes response = new CommentPostRes();
+        response.setContent(comment.getContent());
+        response.setIdeaId(comment.getIdeaId());
+        response.setStaffName(comment.isAnonymous() ? user.getName() : null);
+        return response;
+    }
+
+
 }

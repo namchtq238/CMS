@@ -24,6 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> getByIdAndRole(Long id, Integer role);
 
-    @Query(value = "select `user`.* from user left join `departments` on `user`.id = `departments`.user_id where `departments`.id = ?1", nativeQuery = true)
+    @Query(value = "select `users`.* from `users` left join `departments` on `users`.id = `departments`.user_id where `departments`.id = ?1", nativeQuery = true)
     Optional<User> findUserByDepartmentId(Long departmentId);
 }

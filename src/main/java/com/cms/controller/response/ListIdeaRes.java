@@ -23,6 +23,8 @@ public class ListIdeaRes {
 
     Long categoryId;
 
+    String categoryName;
+
     String name;
 
     String url;

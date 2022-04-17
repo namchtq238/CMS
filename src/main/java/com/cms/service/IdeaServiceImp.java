@@ -9,8 +9,10 @@ import com.cms.constants.ERole;
 import com.cms.constants.LikeStatus;
 import com.cms.controller.request.DownloadReq;
 import com.cms.controller.request.UploadReq;
+import com.cms.controller.response.CommentPostRes;
 import com.cms.controller.response.IdeaDetailRes;
 import com.cms.controller.response.ListIdeaRes;
+import com.cms.controller.service.CommentService;
 import com.cms.controller.service.ExportService;
 import com.cms.controller.service.IdeaService;
 import com.cms.database.*;
@@ -27,6 +29,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletOutputStream;
 import javax.transaction.Transactional;
 import java.io.*;
@@ -80,6 +84,8 @@ public class IdeaServiceImp implements IdeaService {
     @Value("${file.download-dir}")
     String downloadDir;
 
+    @Autowired
+    CommentService commentService;
     //nhớ đánh index
     @Override
     public PaginationT<ListIdeaRes> findIdea(Long depaId, String sortBy, Integer page, Integer size) throws Exception {
@@ -135,7 +141,7 @@ public class IdeaServiceImp implements IdeaService {
     //Optimze code từ chạy 7s -> 3s
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
-    public ListIdeaRes uploadDocumentInScheduled(UploadReq req) {
+    public ListIdeaRes uploadDocumentInScheduled(UploadReq req) throws AddressException {
         Optional<User> userOpt = userRepo.findById(req.getUserId());
         if (userOpt.isEmpty())
             throw new RuntimeException("Not Found");
@@ -181,12 +187,13 @@ public class IdeaServiceImp implements IdeaService {
         Optional<User> qa = userRepo.findUserByDepartmentId(req.getDepartmentId());
         if(qa.isEmpty()) throw new RuntimeException("Cannot find QA with department ID: " + req.getDepartmentId());
         mailDTO.setContent("Someone has name " + user.getName() + "post an idea to your department");
-        mailDTO.setFrom("gogitek.wibu.love.anal@gmail.com");
-        mailDTO.setTo(qa.get().getUserName());
+        mailDTO.setFrom(new InternetAddress("gogitek.wibu.love.anal@gmail.com").getAddress());
+        mailDTO.setTo(qa.get().getEmail());
         mailDTO.setSubject("User Post idea");
         mailSender.sendMail(mailDTO);
 
         ListIdeaRes res = mapper.ideaToRes(idea);
+        res.setCategoryName(category.getName());
         res.setTotalComment(0);
         res.setTotalLike(0);
         res.setUrl(fileOriginalUri);
@@ -236,9 +243,11 @@ public class IdeaServiceImp implements IdeaService {
         Integer totalComment = commentRepo.countCommentForDetailIdea(ideaId);
         List<Comment> commentContents = commentList.stream().sorted((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate())).collect(Collectors.toList());
 
-        PaginationT<String> listCommentContent = new PaginationT<>();
+        PaginationT<CommentPostRes> listCommentContent = new PaginationT<>();
         listCommentContent.setTotal(commentList.getTotalElements());
-        listCommentContent.setItems(commentContents.stream().map(Comment::getContent).collect(Collectors.toList()));
+        listCommentContent.setItems(commentContents.stream()
+                .map(comment -> commentService.mapToResponse(comment))
+                .collect(Collectors.toList()));
 
         IdeaDetailRes res = new IdeaDetailRes();
 
