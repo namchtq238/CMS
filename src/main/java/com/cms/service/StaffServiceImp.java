@@ -60,7 +60,7 @@ public class StaffServiceImp implements StaffService {
 
     @Override
     public StaffRes getStaff(Long id) {
-        Optional<User> userOpt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
+        Optional<User> userOpt = userRepository.findById(id);
         if(userOpt.isEmpty()) return null;
         User user = userOpt.get();
 
@@ -91,7 +91,7 @@ public class StaffServiceImp implements StaffService {
     @Override
     @Transactional(rollbackOn = RuntimeException.class)
     public StaffRes update(Long id, StaffReq staffReq) {
-        Optional<User> opt = userRepository.getByIdAndRole(id, ERole.STAFF.getValue());
+        Optional<User> opt = userRepository.findById(id);
         if (opt.isEmpty()) throw new RuntimeException("Could not found Staff with id: " + id);
         User user = opt.get();
 

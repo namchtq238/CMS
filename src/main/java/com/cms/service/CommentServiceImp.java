@@ -51,10 +51,12 @@ public class CommentServiceImp implements CommentService {
     public CommentPostRes postComment(CommentReq commentReq) {
         Comment comment = new Comment();
 
-        Idea idea = ideaRepository.findById(commentReq.getIdeaId()).orElseThrow(() -> new RuntimeException("Cannot found idea with id: " + commentReq.getIdeaId()));
+        Idea idea = ideaRepository.findById(commentReq.getIdeaId())
+                .orElseThrow(() -> new RuntimeException("Cannot found idea with id: " + commentReq.getIdeaId()));
         idea.setLastComment(Instant.now());
         Long staffId = idea.getUserId();
-        User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.QA.getValue()).orElseThrow(()-> new RuntimeException("Connot found idea with ID: " + idea.getUserId()));
+        User userIdea = userRepository.getByIdAndRole(idea.getUserId(), ERole.STAFF.getValue())
+                .orElseThrow(()-> new RuntimeException("Connot found user with ID: " + idea.getUserId()));
         Optional<User> staffComment = userRepository.getByIdAndRole(commentReq.getStaffId(), ERole.STAFF.getValue());
         comment.setContent(commentReq.getContent());
         comment.setAnonymous(commentReq.isAnonymous());
@@ -79,4 +81,30 @@ public class CommentServiceImp implements CommentService {
 
         return response;
     }
+
+    @Override
+    public CommentPostRes getCommentById(Long id) {
+        Comment comment = commentRepo.findById(id).orElse(null);
+        if (comment == null) {
+            return null;
+        }
+
+
+        return this.mapToResponse(comment);
+    }
+
+    @Override
+    public CommentPostRes mapToResponse(Comment comment) {
+        User user = userRepository.findById(comment.getUserId()).orElse(null);
+        if(user == null) {
+            return null;
+        }
+        CommentPostRes response = new CommentPostRes();
+        response.setContent(comment.getContent());
+        response.setIdeaId(comment.getIdeaId());
+        response.setStaffName(comment.isAnonymous() ? user.getName() : null);
+        return response;
+    }
+
+
 }
