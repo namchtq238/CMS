@@ -31,8 +31,8 @@ public class StaffServiceImp implements StaffService {
     @Autowired
     Mapper mapper;
     @Override
-    public List<StaffRes> getAllStaff() {
-        List<User> userList = userRepository.findByRole(ERole.STAFF.getValue());
+    public List<StaffRes> getAllStaffAndQa() {
+        List<User> userList = userRepository.findByRoleStaffAndQa();
         return userList.stream().map(entity -> mapper.entityStaffToStaffRes(entity)).collect(Collectors.toList());
     }
 
