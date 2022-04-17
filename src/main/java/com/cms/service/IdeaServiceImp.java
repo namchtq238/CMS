@@ -163,7 +163,7 @@ public class IdeaServiceImp implements IdeaService {
         //save Idea
         Idea idea = new Idea();
         idea.setDescription(req.getDescription());
-        idea.setDocument(document);
+        idea.setDocumentId(document.getId());
         idea.setName(req.getName());
         idea.setStartDate(Instant.parse(req.getStartDate()));
         idea.setTimeUp(Instant.parse(req.getEndDate()));
@@ -223,6 +223,7 @@ public class IdeaServiceImp implements IdeaService {
         Pageable pageable = PageRequest.of(page, size);
         if (ideaOpt.isEmpty()) return null;
         Idea idea = ideaOpt.get();
+        Document document = documentRepo.getById(idea.getDocumentId());
         Page<Comment> commentList = commentRepo.findByIdeaId(ideaId, pageable);
 
         Integer totalLike = likeRepo.countLikesByIsLikeAndIdeaId(LikeStatus.LIKE.getValue(), ideaId);
@@ -244,7 +245,7 @@ public class IdeaServiceImp implements IdeaService {
         res.setDescription(idea.getDescription());
         res.setTotalLike(totalLike);
         res.setTotalComment(totalComment);
-        res.setUrl(idea.getDocument().getUrl());
+        res.setUrl(document.getUrl());
         res.setTotalDislike(totalDislike);
         if(statusLike == null) res.setLikeStatus(1);
         res.setLikeStatus(statusLike);
